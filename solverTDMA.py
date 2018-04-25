@@ -5,7 +5,7 @@ Created on Tue Apr 24 16:55:30 2018
 
 @author: tclavoratti
 """
-def solverTDMA(A,B):
+def solve(A,B):
     a = []
     b = []
     c = []
@@ -36,6 +36,6 @@ def solverTDMA(A,B):
     x[n-1] = d[n-1]/a[n-1]
     for i in range(n,1,-1):
         x[i-2] = (d[i-2]-b[i-2]*x[i-1])/a[i-2]
-    print(n)
-    
-solverTDMA([[1,-1,0,0,0],[1,1,-1,0,0],[0,1,-1,1,0],[0,0,-1,1,1],[0,0,0,-1,2]],[0,1,2,-1,-2])
+    return x
+#fuction test    
+#solverTDMA([[1,-1,0,0,0],[1,1,-1,0,0],[0,1,-1,1,0],[0,0,-1,1,1],[0,0,0,-1,2]],[0,1,2,-1,-2])

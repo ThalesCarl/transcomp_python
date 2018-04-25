@@ -6,6 +6,7 @@ Created on Mon Apr 23 16:01:21 2018
 @author: tclavoratti
 """
 import math as mt
+import solverTDMA as tdma
 pi = mt.pi
 ##############################
 #  Setting input paramethers
@@ -50,7 +51,7 @@ surfacePositions.append(accumulator)
 oldTemperatureField = []
 for i in range(numberOfNodes):
     oldTemperatureField.append(80)
-temperatureField = []
+
 
 ########################################
 # Matrix coefficients and linear Vector
@@ -90,4 +91,6 @@ for j in range(numberOfNodes):
     A[numberOfNodes-1].append(0)
 A[numberOfNodes-1][numberOfNodes-2] = -aw
 A[numberOfNodes-1][numberOfNodes-1] = ap
-b.append(ap0 * oldTemperatureField[numberOfNodes-1] + hAx*Tinf)    
+b.append(ap0 * oldTemperatureField[numberOfNodes-1] + hAx*Tinf)   
+
+temperatureField = tdma.solve(A,b)
