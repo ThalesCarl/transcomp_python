@@ -21,8 +21,11 @@ r0 = 0.05
 wallLength = 0.005
 length = 1
 numberOfNodes = 5
+initialTemperature = 80
 prescribedTemperature = 200
 deltaT = 0.001
+temperatureFuncionPeriod = 0.04
+toleranceBetweenPeriods = 0.01
 
 
 #############################
@@ -45,52 +48,74 @@ for i in range(numberOfNodes - 1):
 accumulator -= 0.5*deltaR;
 surfacePositions.append(accumulator)
 
-################################
-# Setting beginTemperatureFields
-################################
+##########################################################
+# Setting beginTemperatureFields and iteration paramethers
+##########################################################
 oldTemperatureField = []
-for i in range(numberOfNodes):
-    oldTemperatureField.append(80)
-
-
-########################################
-# Matrix coefficients and linear Vector
-########################################
-
-A=[]
-b = []
-A.append([])
-
-#First Volume
-A[0].append(1)
+oldTemperatureField.append(200)
 for i in range(numberOfNodes - 1):
-    A[0].append(0)
-b.append(prescribedTemperature)
+    oldTemperatureField.append(initialTemperature)
 
-#Central Volumes
-for i in range(1,numberOfNodes - 1):
-    ap0 = rho*cp*2*pi*nodePositions[i]*length * deltaR/deltaT
-    aw = k*2*pi*surfacePositions[i] * length/deltaR
-    ae = k*2*pi*surfacePositions[i+1] * length/deltaR
-    ap = ap0 + aw + ae
+timePosition = 0
+iterationCounter = 0
+transientTemperatureField = []
+transientTemperatureField.append([])
+transientTemperatureField[iterationCounter].append(timePosition)
+transientTemperatureField[iterationCounter].extend(oldTemperatureField)
+iterationPerPeriod = int(temperatureFuncionPeriod/deltaT)
+
+
+for i in range(401):
+    timePosition += deltaT
+    iterationCounter += 1
+    prescribedTemperature = 150 + 50*mt.cos(50*pi*timePosition)
+    ########################################
+    # Matrix coefficients and linear Vector
+    ########################################    
+    A=[]
+    b = []
+    A.append([])
+    
+    #First Volume
+    A[0].append(1)
+    for i in range(numberOfNodes - 1):
+        A[0].append(0)
+    b.append(prescribedTemperature)
+    
+    #Central Volumes
+    for i in range(1,numberOfNodes - 1):
+        ap0 = rho*cp*2*pi*nodePositions[i]*length * deltaR/deltaT
+        aw = k*2*pi*surfacePositions[i] * length/deltaR
+        ae = k*2*pi*surfacePositions[i+1] * length/deltaR
+        ap = ap0 + aw + ae
+        A.append([])
+        for j in range(numberOfNodes):
+            A[i].append(0)
+        A[i][i-1] = -aw
+        A[i][i] = ap
+        A[i][i+1] = -ae
+        b.append(ap0 * oldTemperatureField[i])
+        
+    #Last Volume
+    ap0 = rho*cp*2*pi*0.5*nodePositions[numberOfNodes-1]*length * deltaR/deltaT
+    aw = 2*pi*k*surfacePositions[numberOfNodes-1]*length/deltaR
+    hAx = 2*pi*nodePositions[numberOfNodes-1]*h
+    ap = aw + ap0 + hAx
     A.append([])
     for j in range(numberOfNodes):
-        A[i].append(0)
-    A[i][i-1] = -aw
-    A[i][i] = ap
-    A[i][i+1] = -ae
-    b.append(ap0 * oldTemperatureField[i])
+        A[numberOfNodes-1].append(0)
+    A[numberOfNodes-1][numberOfNodes-2] = -aw
+    A[numberOfNodes-1][numberOfNodes-1] = ap
+    b.append(ap0 * oldTemperatureField[numberOfNodes-1] + hAx*Tinf)   
     
-#Last Volume
-ap0 = rho*cp*2*pi*0.5*nodePositions[numberOfNodes-1]*length * deltaR/deltaT
-aw = 2*pi*k*surfacePositions[numberOfNodes-1]*length/deltaR
-hAx = 2*pi*nodePositions[numberOfNodes-1]*h
-ap = aw + ap0 + hAx
-A.append([])
-for j in range(numberOfNodes):
-    A[numberOfNodes-1].append(0)
-A[numberOfNodes-1][numberOfNodes-2] = -aw
-A[numberOfNodes-1][numberOfNodes-1] = ap
-b.append(ap0 * oldTemperatureField[numberOfNodes-1] + hAx*Tinf)   
-
-temperatureField = tdma.solve(A,b)
+    ###########################
+    #Solving the linear system
+    ##########################
+    
+    temperatureField = tdma.solve(A,b)
+    transientTemperatureField.append([])
+    transientTemperatureField[iterationCounter].append(timePosition)
+    transientTemperatureField[iterationCounter].extend(temperatureField)
+    oldTemperatureField = temperatureField
+    
+    
