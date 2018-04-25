@@ -64,8 +64,9 @@ transientTemperatureField[iterationCounter].append(timePosition)
 transientTemperatureField[iterationCounter].extend(oldTemperatureField)
 iterationPerPeriod = int(temperatureFuncionPeriod/deltaT)
 
+difference = 1
 
-for i in range(401):
+while(difference>toleranceBetweenPeriods and iterationCounter < 500):
     timePosition += deltaT
     iterationCounter += 1
     prescribedTemperature = 150 + 50*mt.cos(50*pi*timePosition)
@@ -110,12 +111,23 @@ for i in range(401):
     
     ###########################
     #Solving the linear system
-    ##########################
-    
+    ##########################    
     temperatureField = tdma.solve(A,b)
     transientTemperatureField.append([])
     transientTemperatureField[iterationCounter].append(timePosition)
     transientTemperatureField[iterationCounter].extend(temperatureField)
     oldTemperatureField = temperatureField
+    
+    ###########################################
+    #Comparing with the results a period before
+    ###########################################
+    soma = 0;
+    if(iterationCounter>iterationPerPeriod):        
+        for i in range(len(temperatureField)):
+            tp = temperatureField[i]
+            tp0 = transientTemperatureField[iterationCounter - iterationPerPeriod][i+1]
+            auxiliar = tp -tp0
+            soma += auxiliar*auxiliar
+        difference = mt.sqrt(soma/numberOfNodes)
     
     
