@@ -27,7 +27,15 @@ def solverTDMA(A,B):
     b.append(float('nan'))
     c.append(A[len(A)-1][len(A)-2])
     d.append(B[len(B)-1])
-    
-    
+    n = len(a)
+    for i in range(1,n):
+        aux = c[i]/a[i-1]
+        a[i] = a[i]-aux * b[i-1]
+        d[i] = d[i]-aux * d[i-1]
+        c[i] = 0
+    x[n-1] = d[n-1]/a[n-1]
+    for i in range(n,1,-1):
+        x[i-2] = (d[i-2]-b[i-2]*x[i-1])/a[i-2]
+    print(n)
     
 solverTDMA([[1,-1,0,0,0],[1,1,-1,0,0],[0,1,-1,1,0],[0,0,-1,1,1],[0,0,0,-1,2]],[0,1,2,-1,-2])
