@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Apr 23 16:01:21 2018
+Created on Fri Apr 27 08:56:01 2018
 
 @author: tclavoratti
 """
+
 import math as mt
 import numpy as np
 import matplotlib.pyplot as plt
 import solverTDMA as tdma
 pi = mt.pi
-def transienteImplicito(numbOfNodes,deltaTime,tolerance):
+def iterationsOnTransienteImplicito(numbOfNodes,deltaTime,tolerance):
     ##############################
     #  Setting input paramethers
     ##############################
@@ -132,34 +133,45 @@ def transienteImplicito(numbOfNodes,deltaTime,tolerance):
                 auxiliar = tp -tp0
                 soma += auxiliar*auxiliar
             difference = mt.sqrt(soma/numberOfNodes)
-    print(iterationCounter)
-    return transientTemperatureField 
+   
+    return iterationCounter
 
-################################
-#Plotting solution
-###############################
-temperaturesToPlot = transienteImplicito(4,0.001,0.01)      
-transposedData = np.array(temperaturesToPlot).transpose()
-numberOfNodes = 4;
-wallLength = 0.005
-x = transposedData[0]
-nodePositions = []
-r0 = 0.05
-accumulator = r0
-deltaR = wallLength/(numberOfNodes - 1)
-for i in range(numberOfNodes):
-    nodePositions.append(accumulator)
-    accumulator += deltaR
-for i in range(1,numberOfNodes+1):
-    y = transposedData[i]
-    nodeToDisplay = nodePositions[i-1]
-    nodeToDisplay = format(nodeToDisplay,'.3e')
-    plt.plot(x,y,label = nodeToDisplay)
-    plt.xlabel('t [s]')
-    plt.ylabel("T(x,t) [°C]")
-    plt.axis([-0.0001,0.65,20,202])
-    legend = plt.legend(loc='lower right')
-#plt.savefig("./results_implicit/plot" + str (numberOfNodes) + "nodes.png")
-
-
+#Variando o número de volumes de controle
+x1 = []
+y1 = []
+for i in range(6):
+    numberOfNodes = int(4*mt.pow(2,i))
+    x1.append(numberOfNodes)
+    y1.append(iterationsOnTransienteImplicito(numberOfNodes,0.001,0.01))
+plt.plot(x1,y1,'ko',)
+plt.xlabel('Número de volumes de controle')
+plt.ylabel('Número de iterações')
+plt.grid(b=1)
+plt.savefig('./results_implicit/iterations_per_cv.png')
     
+#Variando a tolerância
+x2 = []
+y2 = []
+x3 = []
+y3 = []
+tolerance = 0.1
+for i in range(5):
+    x2.append(tolerance)
+    x3.append(mt.log(tolerance,10))
+    y2.append(iterationsOnTransienteImplicito(4,0.001,tolerance))
+    y3.append(mt.log(y2[i]))
+    tolerance /= 10
+
+plt.cla()
+plt.plot(x2,y2,'ko')
+plt.xlabel('Tolerância')
+plt.ylabel('Número de iterações')
+plt.grid(b=1)
+plt.savefig('./results_implicit/iterations_per_tolerance.png')
+
+plt.cla()
+plt.plot(x3,y2,'ko')
+plt.xlabel('log(tolerância)')
+plt.ylabel('Número de iterações')
+plt.grid(b=1)
+plt.savefig('./results_implicit/iterations_per_log_tolerance.png')
