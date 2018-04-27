@@ -133,7 +133,7 @@ def iterationsOnTransienteImplicito(numbOfNodes,deltaTime,tolerance):
                 auxiliar = tp -tp0
                 soma += auxiliar*auxiliar
             difference = mt.sqrt(soma/numberOfNodes)
-   
+    print(iterationCounter)
     return iterationCounter
 
 #Variando o número de volumes de controle
@@ -156,6 +156,7 @@ x3 = []
 y3 = []
 tolerance = 0.1
 for i in range(5):
+    print(tolerance)
     x2.append(tolerance)
     x3.append(mt.log(tolerance,10))
     y2.append(iterationsOnTransienteImplicito(4,0.001,tolerance))

@@ -161,5 +161,17 @@ for i in range(1,numberOfNodes+1):
     legend = plt.legend(loc='lower right')
 #plt.savefig("./results_implicit/plot" + str (numberOfNodes) + "nodes.png")
 
-
-    
+topTemperatures = []
+for i in range(len(temperaturesToPlot)):
+    if(i%40==0):
+        topTemperatures.append(temperaturesToPlot[i])
+file = open("./results_implicit/top_temperatures.csv","w")
+for i in range(len(topTemperatures)):
+    for j in range(len(topTemperatures[0])):
+        strrr = str(topTemperatures[i][j])
+        file.write(strrr)
+        if j == len(topTemperatures[0]) - 1:
+            file.write("\n")
+        else:
+            file.write(", ")
+file.close()
