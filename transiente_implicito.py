@@ -6,6 +6,8 @@ Created on Mon Apr 23 16:01:21 2018
 @author: tclavoratti
 """
 import math as mt
+import numpy as np
+import matplotlib.pyplot as plt
 import solverTDMA as tdma
 pi = mt.pi
 ##############################
@@ -20,7 +22,7 @@ Tinf = 80
 r0 = 0.05
 wallLength = 0.005
 length = 1
-numberOfNodes = 5
+numberOfNodes = 4
 initialTemperature = 80
 prescribedTemperature = 200
 deltaT = 0.001
@@ -66,7 +68,7 @@ iterationPerPeriod = int(temperatureFuncionPeriod/deltaT)
 
 difference = 1
 
-while(difference>toleranceBetweenPeriods and iterationCounter < 500):
+while(difference>toleranceBetweenPeriods and iterationCounter < 5000):
     timePosition += deltaT
     iterationCounter += 1
     prescribedTemperature = 150 + 50*mt.cos(50*pi*timePosition)
@@ -130,4 +132,15 @@ while(difference>toleranceBetweenPeriods and iterationCounter < 500):
             soma += auxiliar*auxiliar
         difference = mt.sqrt(soma/numberOfNodes)
     
-    
+################################
+#Plotting solution
+################################
+transposedData = np.array(transientTemperatureField).transpose()
+x = transposedData[0]
+for i in range(1,numberOfNodes+1):
+    y = transposedData[i]
+    nodeToDisplay = nodePositions[i-1]
+    nodeToDisplay = format(nodeToDisplay,'.3e')
+    plt.plot(x,y,label = nodeToDisplay)
+    plt.axis([-0.0001,0.65,20,202])
+    legend = plt.legend(loc='lower right')
