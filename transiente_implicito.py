@@ -1,9 +1,6 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Mon Apr 23 16:01:21 2018
-
-@author: tclavoratti
+Aluno: Thales Carl Lavoratti (15100656)
+Código transiente implicito
 """
 import math as mt
 import numpy as np
