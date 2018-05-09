@@ -77,21 +77,35 @@ for i in range(numberOfNodes):
 for j in range(xNumberOfNodes):
     if  j == 0:
         aEast = k*w*deltaY/deltaX
-        aPreWest = (k*w*deltaY)/(0.5*deltaX)
-        aPreSouth = 0.0
+        aWest = (k*w*deltaY)/(0.5*deltaX)
+        aSouth = 0.0
         aNorth = k*w*deltaX/deltaY
-        ap = aEast + aNorth + aPreWest
-        A[0][j] = ap
-        A[0][j+1] = -aEast
-        A[0][xNumberOfNodes] = -aNorth
-        b[0] = aPreWest * T0
+        ap = aEast + aNorth + aWest + aSouth
+        A[j][j] = ap
+        A[j][j+1] = -aEast
+        A[j][j+xNumberOfNodes] = -aNorth
+        b[j] = aWest * T0
         
     elif j == (xNumberOfNodes - 1):
-        print(j)
-        print(" fluxo prescrito direita e fluxo prescrito baixo")
+        aEast = 0.0
+        aWest = k*w*deltaY/deltaX
+        aSouth = 0.0
+        aNorth = k*w*0.5*deltaX/deltaY
+        ap = aEast + aNorth + aWest + aSouth
+        A[j][j-1] = -aWest
+        A[j][j] = ap
+        A[j][j+xNumberOfNodes] = -aNorth
     else:
-        print(j)
-        print(" fluxo prescrito baixo\n")
+        aEast = k*w*deltaY/deltaX
+        aWest = (k*w*deltaY)/(deltaX)
+        aSouth = 0.0
+        aNorth = k*w*deltaX/deltaY
+        ap = aEast + aNorth + aWest + aSouth
+        A[j][j-1] = -aWest
+        A[j][j] = ap
+        A[j][j+1] = -aEast        
+        A[j][j+xNumberOfNodes] = -aNorth
+        
         
 #center
 for i in range(1,yNumberOfNodes):
