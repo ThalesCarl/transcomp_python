@@ -16,11 +16,12 @@ import matplotlib.pyplot as plt
 w = 1.0 #[m]
 L = 1.0 #[m]
 t = 0.1 #[m]
+k = 230.0 #[W/mºC]
 h = 26.3 #[W/m^2]
 T0 = 100.0 #[ºC]
 Tinf = 20.0 #[ºC]
-yNumberOfNodes = 4
-xNumberOfNodes = 8
+yNumberOfNodes = 3
+xNumberOfNodes = 4
 
 #############################
 # Mesh generation in y
@@ -60,3 +61,65 @@ for i in range(xNumberOfNodes):
 xSum -= 0.5*deltaX
 xSurfacePositions.append(xSum)
 
+##############################################################
+# Generating the matrix of coefficients and independent vector
+##############################################################
+A = []
+b = []
+numberOfNodes = xNumberOfNodes * yNumberOfNodes
+
+for i in range(numberOfNodes):
+    A.append([])
+    for j in range(numberOfNodes):
+        A[i].append(0.0)
+    b.append(0.0)
+#bottom
+for j in range(xNumberOfNodes):
+    if  j == 0:
+        aEast = k*w*deltaY/deltaX
+        aPreWest = (k*w*deltaY)/(0.5*deltaX)
+        aPreSouth = 0.0
+        aNorth = k*w*deltaX/deltaY
+        ap = aEast + aNorth + aPreWest
+        A[0][j] = ap
+        A[0][j+1] = -aEast
+        A[0][xNumberOfNodes] = -aNorth
+        b[0] = aPreWest * T0
+        
+    elif j == (xNumberOfNodes - 1):
+        print(j)
+        print(" fluxo prescrito direita e fluxo prescrito baixo")
+    else:
+        print(j)
+        print(" fluxo prescrito baixo\n")
+        
+#center
+for i in range(1,yNumberOfNodes):
+    for j in range(xNumberOfNodes):
+        if  j == 0:
+            print(i)
+            print(j)
+            print(" temperatura prescrita esquerda")
+        elif j == (xNumberOfNodes - 1):
+            print(i)
+            print(j)
+            print(" fluxo prescrito direita")
+        else:
+            print("normal")
+#            aEast  =  k*deltaY/deltaX
+#            aWest  =  k*deltaY/deltaX
+#            aSouth =  k*deltaX/deltaY
+#            aNorth =  k*deltaX/deltaY
+#            ap = aEast + aWest + aSouth + aNorth
+            
+#top
+for j in range(xNumberOfNodes):
+    if  j == 0:
+        print(j)
+        print(" temperatura prescrita esquerda e convecção")
+    elif j == (xNumberOfNodes - 1):
+        print(j)
+        print(" fluxo prescrito direita e convecção")
+    else:
+        print(j)
+        print(" convecção")           
