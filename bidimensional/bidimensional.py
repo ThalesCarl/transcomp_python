@@ -76,10 +76,10 @@ for i in range(numberOfNodes):
 #bottom
 for j in range(xNumberOfNodes):
     if  j == 0:
-        aEast = k*w*deltaY/deltaX
-        aWest = (k*w*deltaY)/(0.5*deltaX)
+        aEast = k*w*0.5*deltaY/deltaX
+        aWest = (k*w*0.5*deltaY)/(0.5*deltaX)
         aSouth = 0.0
-        aNorth = k*w*deltaX/deltaY
+        aNorth = k*w*0.5*deltaX/deltaY
         ap = aEast + aNorth + aWest + aSouth
         A[j][j] = ap
         A[j][j+1] = -aEast
@@ -88,7 +88,7 @@ for j in range(xNumberOfNodes):
         
     elif j == (xNumberOfNodes - 1):
         aEast = 0.0
-        aWest = k*w*deltaY/deltaX
+        aWest = k*w*0.5*deltaY/deltaX
         aSouth = 0.0
         aNorth = k*w*0.5*deltaX/deltaY
         ap = aEast + aNorth + aWest + aSouth
@@ -96,8 +96,8 @@ for j in range(xNumberOfNodes):
         A[j][j] = ap
         A[j][j+xNumberOfNodes] = -aNorth
     else:
-        aEast = k*w*deltaY/deltaX
-        aWest = (k*w*deltaY)/(deltaX)
+        aEast = k*w*0.5*deltaY/deltaX
+        aWest = k*w*0.5*deltaY/deltaX
         aSouth = 0.0
         aNorth = k*w*deltaX/deltaY
         ap = aEast + aNorth + aWest + aSouth
@@ -108,24 +108,40 @@ for j in range(xNumberOfNodes):
         
         
 #center
-for i in range(1,yNumberOfNodes):
+for i in range(1,yNumberOfNodes-1):
     for j in range(xNumberOfNodes):
         if  j == 0:
-            print(i)
-            print(j)
-            print(" temperatura prescrita esquerda")
+            aEast = k*w*deltaY/deltaX
+            aWest = k*w*deltaY/(0.5*deltaX)
+            aSouth = k*w*0.5*deltaX/deltaY
+            aNorth = k*w*0.5*deltaX/deltaY
+            ap = aEast + aNorth + aWest + aSouth
+            A[i*xNumberOfNodes+j][j+xNumberOfNodes*(i-1)] = -aSouth
+            A[i*xNumberOfNodes+j][i*xNumberOfNodes+j] = ap
+            A[i*xNumberOfNodes+j][i*xNumberOfNodes+j+1] = -aEast
+            A[i*xNumberOfNodes+j][j+xNumberOfNodes*(i+1)] = -aNorth
+            b[i*xNumberOfNodes+j] = aWest * T0
         elif j == (xNumberOfNodes - 1):
-            print(i)
-            print(j)
-            print(" fluxo prescrito direita")
+            aEast  =  0.0
+            aWest  =  k*w*deltaY/deltaX
+            aSouth =  k*w*0.5*deltaX/deltaY
+            aNorth =  k*w*0.5*deltaX/deltaY
+            ap = aEast + aWest + aSouth + aNorth
+            A[i*xNumberOfNodes+j][j+xNumberOfNodes*(i-1)] = -aSouth
+            A[i*xNumberOfNodes+j][i*xNumberOfNodes+j-1] = -aWest
+            A[i*xNumberOfNodes+j][i*xNumberOfNodes+j] = ap
+            A[i*xNumberOfNodes+j][j+xNumberOfNodes*(i+1)] = -aNorth
         else:
-            print("normal")
-#            aEast  =  k*deltaY/deltaX
-#            aWest  =  k*deltaY/deltaX
-#            aSouth =  k*deltaX/deltaY
-#            aNorth =  k*deltaX/deltaY
-#            ap = aEast + aWest + aSouth + aNorth
-            
+            aEast  =  k*deltaY/deltaX
+            aWest  =  k*deltaY/deltaX
+            aSouth =  k*deltaX/deltaY
+            aNorth =  k*deltaX/deltaY
+            ap = aEast + aWest + aSouth + aNorth
+            A[i*xNumberOfNodes+j][j+xNumberOfNodes*(i-1)] = -aSouth
+            A[i*xNumberOfNodes+j][i*xNumberOfNodes+j-1] = -aWest
+            A[i*xNumberOfNodes+j][i*xNumberOfNodes+j] = ap
+            A[i*xNumberOfNodes+j][i*xNumberOfNodes+j+1] = -aEast
+            A[i*xNumberOfNodes+j][j+xNumberOfNodes*(i+1)] = -aNorth
 #top
 for j in range(xNumberOfNodes):
     if  j == 0:
