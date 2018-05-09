@@ -111,8 +111,8 @@ for j in range(xNumberOfNodes):
 for i in range(1,yNumberOfNodes-1):
     for j in range(xNumberOfNodes):
         if  j == 0:
-            aEast = k*w*deltaY/deltaX
-            aWest = k*w*deltaY/(0.5*deltaX)
+            aEast =  k*w*deltaY/deltaX
+            aWest =  k*w*deltaY/(0.5*deltaX)
             aSouth = k*w*0.5*deltaX/deltaY
             aNorth = k*w*0.5*deltaX/deltaY
             ap = aEast + aNorth + aWest + aSouth
@@ -132,10 +132,10 @@ for i in range(1,yNumberOfNodes-1):
             A[i*xNumberOfNodes+j][i*xNumberOfNodes+j] = ap
             A[i*xNumberOfNodes+j][j+xNumberOfNodes*(i+1)] = -aNorth
         else:
-            aEast  =  k*deltaY/deltaX
-            aWest  =  k*deltaY/deltaX
-            aSouth =  k*deltaX/deltaY
-            aNorth =  k*deltaX/deltaY
+            aEast  =  k*w*deltaY/deltaX
+            aWest  =  k*w*deltaY/deltaX
+            aSouth =  k*w*deltaX/deltaY
+            aNorth =  k*w*deltaX/deltaY
             ap = aEast + aWest + aSouth + aNorth
             A[i*xNumberOfNodes+j][j+xNumberOfNodes*(i-1)] = -aSouth
             A[i*xNumberOfNodes+j][i*xNumberOfNodes+j-1] = -aWest
@@ -145,11 +145,21 @@ for i in range(1,yNumberOfNodes-1):
 #top
 for j in range(xNumberOfNodes):
     if  j == 0:
-        print(j)
-        print(" temperatura prescrita esquerda e convecção")
+        aEast = k*w*0.5*deltaY/deltaX
+        aWest = k*w*0.5*deltaY/(0.5*deltaX)
+        aSouth = k*w*0.5*deltaX/deltaY
+        aNorth = h*w*0.5*deltaX
+        ap = aEast + aNorth + aWest + aSouth
+        A[(yNumberOfNodes-1)*xNumberOfNodes+j][(j+yNumberOfNodes-2)*xNumberOfNodes+j] = -aSouth
+        A[(yNumberOfNodes-1)*xNumberOfNodes+j][(yNumberOfNodes-1)*xNumberOfNodes+j] = ap
+        A[(yNumberOfNodes-1)*xNumberOfNodes+j][(yNumberOfNodes-1)*xNumberOfNodes+j+1] = -aEast
+        b[(yNumberOfNodes-1)*xNumberOfNodes+j] = aWest * T0 + aNorth*Tinf
     elif j == (xNumberOfNodes - 1):
-        print(j)
-        print(" fluxo prescrito direita e convecção")
+        aEast =  k*w*0.5*deltaY/deltaX
+        aWest =  k*w*0.5*deltaY/deltaX
+        aSouth = k*w*deltaX/deltaY
+        aNorth = h*w*0.5*deltaX
+        ap = aEast + aNorth + aWest + aSouth        
     else:
         print(j)
         print(" convecção")           
