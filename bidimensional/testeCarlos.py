@@ -15,12 +15,12 @@ import matplotlib.pyplot as plt
 
 w = 1.0 #[m]
 L = 1.0 #[m]
-t = 0.1 #[m]
+t = 2 #[m]
 k = 230.0 #[W/mºC]
 h = 26.3 #[W/m^2]
 T0 = 100.0 #[ºC]
 Tinf = 20.0 #[ºC]
-yNumberOfNodes = 3
+yNumberOfNodes = 4
 xNumberOfNodes = 4
 
 #############################
@@ -144,7 +144,6 @@ for i in range(1,yNumberOfNodes-1):
             A[i*xNumberOfNodes+j][j+xNumberOfNodes*(i+1)] = -aNorth
 #top
 for j in range(xNumberOfNodes):
-    
     if  j == 0:
         aEast = k*w*0.5*deltaY/deltaX
         aWest = k*w*0.5*deltaY/(0.5*deltaX)
@@ -169,24 +168,10 @@ for j in range(xNumberOfNodes):
         aEast =  k*w*0.5*deltaY/deltaX
         aWest =  k*w*0.5*deltaY/deltaX
         aSouth = k*w*deltaX/deltaY
-        aNorth = h*w*deltaX
+        aNorth = h*w*0.5*deltaX
         ap = aEast + aNorth + aWest + aSouth          
         A[(yNumberOfNodes-1)*xNumberOfNodes+j][j+(yNumberOfNodes-2)*xNumberOfNodes] = -aSouth
         A[(yNumberOfNodes-1)*xNumberOfNodes+j][(yNumberOfNodes-1)*xNumberOfNodes+j-1] = -aWest
         A[(yNumberOfNodes-1)*xNumberOfNodes+j][(yNumberOfNodes-1)*xNumberOfNodes+j] = ap
         A[(yNumberOfNodes-1)*xNumberOfNodes+j][(yNumberOfNodes-1)*xNumberOfNodes+j+1] = -aEast
         b[(yNumberOfNodes-1)*xNumberOfNodes+j] = aNorth*Tinf
-#############################
-# Solving the linear system
-############################
-solution = np.linalg.solve(np.array(A),np.array(b))
-temperatureField = []
-for i in range(yNumberOfNodes):
-    temperatureField.append([])
-    for j in range(xNumberOfNodes):
-        temperatureField[i].append(solution[i*xNumberOfNodes+j])
-        
-plt.imshow(temperatureField)
-plt.show()
-    
-
