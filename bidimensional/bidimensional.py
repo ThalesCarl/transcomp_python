@@ -14,13 +14,13 @@ import matplotlib.pyplot as plt
 
 w = 1.0 #[m]
 L = 1.0 #[m]
-t = 0.8 #[m]
+t = 0.1 #[m]
 k = 230 #[W/mºC]
 h = 26.3 #[W/m^2ºC]
 T0 = 100.0 #[ºC]
 Tinf = 20.0 #[ºC]
-yNumberOfNodes = 10
-xNumberOfNodes = 15
+yNumberOfNodes = 27  
+xNumberOfNodes = 32
 
 #############################
 # Mesh generation in y
@@ -184,7 +184,22 @@ for i in range(yNumberOfNodes):
     temperatureField.append([])
     for j in range(xNumberOfNodes):
         temperatureField[i].append(solution[i*xNumberOfNodes+j])
-        
+    
+###############################
+#Mirror of the temperature field and the mesh
+###############################
+auxTemp = []
+auxMesh = []
+for i in range(1,yNumberOfNodes):
+    auxTemp.append(temperatureField[i])
+    auxMesh.append(-yNodesPositions[i])
+auxTemp = np.flip(auxTemp,0)
+auxMesh = np.flip(auxMesh,0)  
+for i in range(len(auxTemp)):
+    temperatureField.insert(i,auxTemp[i])
+    yNodesPositions.insert(i,auxMesh[i])
+temperatureField = np.array(temperatureField)
+yNodesPositions = np.array(yNodesPositions)
 xx, yy = np.meshgrid(xNodesPositions,yNodesPositions)
 plt.contourf(xx,yy,np.array(temperatureField))
 
