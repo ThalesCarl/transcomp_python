@@ -5,7 +5,6 @@ Aluno: Thales Carl Lavoratti (151000656)
 Código do problema bidimensional de uma aleta
 """
 
-import math as mt
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -15,12 +14,12 @@ import matplotlib.pyplot as plt
 
 w = 1.0 #[m]
 L = 1.0 #[m]
-t = 0.1 #[m]
+t = 2.0 #[m]
 k = 230.0 #[W/mºC]
-h = 26.3 #[W/m^2]
+h = 200 #[W/m^2ºC]
 T0 = 100.0 #[ºC]
 Tinf = 20.0 #[ºC]
-yNumberOfNodes = 3
+yNumberOfNodes = 4
 xNumberOfNodes = 4
 
 #############################
@@ -186,7 +185,6 @@ for i in range(yNumberOfNodes):
     for j in range(xNumberOfNodes):
         temperatureField[i].append(solution[i*xNumberOfNodes+j])
         
-plt.imshow(temperatureField)
-plt.show()
+
     
 
