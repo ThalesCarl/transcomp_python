@@ -3,7 +3,7 @@ Aluno: Thales Carl Lavoratti (151000656)
 Código do problema bidimensional de uma aleta
 """
 
-
+import math as mt
 import numpy as np
 import matplotlib.pyplot as plt
 def getTemperatureField(xN,yN):
@@ -204,24 +204,39 @@ def getTemperatureField(xN,yN):
 ##################################
 #Plotting the solution
 ########################
-temp,x,y = getTemperatureField(20,15)
+temp,x,y = getTemperatureField(4,5)
 xx, yy = np.meshgrid(x,y)
 plt.contourf(xx,yy,np.array(temp))
 plt.colorbar(orientation="vertical")
 plt.xlabel("x[m]")
 
-########################
-#Refinando a malha
-########################
-refineFactor = 2
-xNumbNodes = 4
-yNumbNodes = 5
-oldTemp, x, y = getTemperatureField(xNumbNodes,yNumbNodes)
-diff = 100
-count = 0
-while(diff > 1 and count <200):
-    temp,x,y = getTemperatureField(xNumbNodes,yNumbNodes)
-    
-    diff = 0
+#########################
+##Refinando a malha
+#########################
+#refineFactor = 6
+#xNumbNodes = 4
+#yNumbNodes = 5
+#oldTemp, x, y = getTemperatureField(xNumbNodes,yNumbNodes)
+#diff = 100
+#count = 0
+#temp,x,y = getTemperatureField(refineFactor*xNumbNodes,refineFactor*yNumbNodes)
+#aux = temp[0][refineFactor*xNumbNodes-1]-oldTemp[0,xNumbNodes-1]
+#soma = aux*aux
+#index = int(0.5*(1+yNumbNodes)-1)
+#index2 = int(0.5*(1+refineFactor*yNumbNodes)-1)
+#aux = temp[index2][refineFactor*xNumbNodes-1] - oldTemp[index][xNumbNodes-1]
+#soma += aux*aux
+#diff = mt.sqrt(soma/2)
+#oldTemp = temp
+#count += 1
+#refineFactor += 1
+#print(count)
+#print(diff)
+
+#############################
+#Heat transfer
+############################
+
+
     
 
