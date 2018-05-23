@@ -3,7 +3,7 @@ Aluno: Thales Carl Lavoratti (151000656)
 Código do problema bidimensional de um laminador
 """
 
-import math as mt
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -16,13 +16,13 @@ w = 1.0 #[m]
 L = 1.0 #[m]
 t = 2.0 #[m]
 k = 48.0 #[W/mºC]
-h = 27.4 #[W/m^2ºC]
+h = 1000 #[W/m^2ºC]
 T0 = 1100.0 #[ºC]
 Tinf = 20.0 #[ºC]
 cp = 559.0 #[J/kgK]
 u = 10.0 #[m/s]
 rho = 7832.0 #[kg/m^3]
-cds = True
+cds = 0 #boolean que escolhe se usa método cds ou uds
 yNumberOfNodes = int(0.5*(1+yN))
 xNumberOfNodes = xN
 gamma = k/cp
@@ -81,30 +81,66 @@ for i in range(numberOfNodes):
 #bottom
 for j in range(xNumberOfNodes):
     if  j == 0:
-        aEast = k*w*0.5*deltaY/deltaX
-        aWest = (k*w*0.5*deltaY)/(0.5*deltaX)
-        aSouth = 0.0
-        aNorth = k*w*deltaX/deltaY
+        De = gamma*0.5*deltaY/deltaX
+        Dw = gamma*0.5*deltaY/(0.5*deltaX)
+        Dn = gamma*deltaX/deltaY
+        Me = M*0.5*deltaY
+        Mw = M*0.5*deltaY
+        if(cds):
+            aEast  =  De - 0.5*Me
+            aWest  =  Dw + Mw
+            aSouth =  0.0
+            aNorth =  Dn
+        else:
+            aEast = De
+            aWest = Dw + Mw
+            aNorth = Dn
+            aSouth = 0.0            
         ap = aEast + aNorth + aWest + aSouth
         A[j][j] = ap
         A[j][j+1] = -aEast
         A[j][j+xNumberOfNodes] = -aNorth
-        b[j] = aWest * T0
-        
+        b[j] = aWest * T0        
     elif j == (xNumberOfNodes - 1):
-        aEast = 0.0
-        aWest = k*w*0.5*deltaY/deltaX
-        aSouth = 0.0
-        aNorth = k*w*0.5*deltaX/deltaY
+        Dw = gamma*0.5*deltaY/deltaX
+        Dn = gamma*0.5*deltaX/deltaY
+        Me = M*0.5*deltaY
+        Mw = M*0.5*deltaY
+        if(cds):
+            aEast  =  0.0
+            aWest  =  Dw + 0.5*Mw
+            aSouth =  0.0
+            aNorth =  Dn
+        else:
+            aEast = 0.0
+            aWest = Dw + Mw
+            aNorth = Dn
+            aSouth = 0.0        
+        ap = aEast + aNorth + aWest + aSouth
+        A[j][j-1] = -aWest
+        A[j][j] = ap
+        A[j][j+1] = -aEast        
+        A[j][j+xNumberOfNodes] = -aNorth
         ap = aEast + aNorth + aWest + aSouth
         A[j][j-1] = -aWest
         A[j][j] = ap
         A[j][j+xNumberOfNodes] = -aNorth
     else:
-        aEast = k*w*0.5*deltaY/deltaX
-        aWest = k*w*0.5*deltaY/deltaX
-        aSouth = 0.0
-        aNorth = k*w*deltaX/deltaY
+        De = gamma*0.5*deltaY/deltaX
+        Dw = gamma*0.5*deltaY/deltaX
+        Dn = gamma*deltaX/deltaY
+        Me = M*0.5*deltaY
+        Mw = M*0.5*deltaY
+        if(cds):
+            aEast  =  De - 0.5*Me
+            aWest  =  Dw + 0.5*Mw
+            aSouth =  0.0
+            aNorth =  Dn
+        else:
+            aEast = De
+            aWest = Dw + Mw
+            aNorth = Dn
+            aSouth = 0.0        
         ap = aEast + aNorth + aWest + aSouth
         A[j][j-1] = -aWest
         A[j][j] = ap
@@ -116,10 +152,22 @@ for j in range(xNumberOfNodes):
 for i in range(1,yNumberOfNodes-1):
     for j in range(xNumberOfNodes):
         if  j == 0:
-            aEast =  k*w*deltaY/deltaX
-            aWest =  k*w*deltaY/(0.5*deltaX)
-            aSouth = k*w*deltaX/deltaY
-            aNorth = k*w*deltaX/deltaY
+            De = gamma*deltaY/deltaX
+            Dw = gamma*deltaY/(0.5*deltaX)
+            Dn = gamma*deltaX/deltaY
+            Ds = gamma*deltaX/deltaY
+            Me = M*deltaY
+            Mw = M*deltaY
+            if(cds):
+                aEast  =  De - 0.5*Me
+                aWest  =  Dw + Mw
+                aSouth =  Ds
+                aNorth =  Dn
+            else:
+                aEast = De
+                aWest = Dw + Mw
+                aNorth = Dn
+                aSouth = Ds        
             ap = aEast + aNorth + aWest + aSouth
             A[i*xNumberOfNodes+j][j+xNumberOfNodes*(i-1)] = -aSouth
             A[i*xNumberOfNodes+j][i*xNumberOfNodes+j] = ap
@@ -127,10 +175,21 @@ for i in range(1,yNumberOfNodes-1):
             A[i*xNumberOfNodes+j][j+xNumberOfNodes*(i+1)] = -aNorth
             b[i*xNumberOfNodes+j] = aWest * T0
         elif j == (xNumberOfNodes - 1):
-            aEast  =  0.0
-            aWest  =  k*w*deltaY/deltaX
-            aSouth =  k*w*0.5*deltaX/deltaY
-            aNorth =  k*w*0.5*deltaX/deltaY
+            Dw = gamma*deltaY/deltaX
+            Dn = gamma*0.5*deltaX/deltaY
+            Ds = gamma*0.5*deltaX/deltaY
+            Me = M*deltaY
+            Mw = M*deltaY
+            if(cds):
+                aEast  =  0.0
+                aWest  =  Dw + 0.5*Mw
+                aSouth =  Ds
+                aNorth =  Dn
+            else:
+                aEast = 0.0
+                aWest = Dw + Mw
+                aNorth = Dn
+                aSouth = Ds            
             ap = aEast + aWest + aSouth + aNorth
             A[i*xNumberOfNodes+j][j+xNumberOfNodes*(i-1)] = -aSouth
             A[i*xNumberOfNodes+j][i*xNumberOfNodes+j-1] = -aWest
@@ -160,13 +219,23 @@ for i in range(1,yNumberOfNodes-1):
             A[i*xNumberOfNodes+j][i*xNumberOfNodes+j+1] = -aEast
             A[i*xNumberOfNodes+j][j+xNumberOfNodes*(i+1)] = -aNorth
 #top
-for j in range(xNumberOfNodes):
-    
+for j in range(xNumberOfNodes):    
     if  j == 0:
-        aEast = k*w*0.5*deltaY/deltaX
-        aWest = k*w*0.5*deltaY/(0.5*deltaX)
-        aSouth = k*w*deltaX/deltaY
-        aNorth = h*w*deltaX
+        De = gamma*0.5*deltaY/deltaX
+        Dw = gamma*0.5*deltaY/(0.5*deltaX)
+        Ds = gamma*deltaX/deltaY
+        Me = M*0.5*deltaY
+        Mw = M*0.5*deltaY
+        if(cds):
+            aEast  =  De - 0.5*Me
+            aWest  =  Dw + Mw
+            aSouth =  Ds
+            aNorth =  h*deltaX/cp
+        else:
+            aEast = De
+            aWest = Dw + Mw
+            aNorth = h*deltaX/cp
+            aSouth = Ds
         ap = aEast + aNorth + aWest + aSouth
         A[(yNumberOfNodes-1)*xNumberOfNodes+j][j+(yNumberOfNodes-2)*xNumberOfNodes] = -aSouth
         A[(yNumberOfNodes-1)*xNumberOfNodes+j][(yNumberOfNodes-1)*xNumberOfNodes+j] = ap
