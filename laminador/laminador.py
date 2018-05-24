@@ -10,19 +10,19 @@ import matplotlib.pyplot as plt
 ##############################
 #  Setting input paramethers
 ##############################
-yN = 5
-xN = 3
+yN = 12
+xN = 25
 w = 1.0 #[m]
-L = 1.0 #[m]
-t = 2.0 #[m]
-k = 48.0 #[W/mºC]
+L = 50.0 #[m]
+t = 0.01 #[m]
+k = 48#[W/mºC]
 h = 1000 #[W/m^2ºC]
 T0 = 1100.0 #[ºC]
 Tinf = 20.0 #[ºC]
 cp = 559.0 #[J/kgK]
 u = 10.0 #[m/s]
 rho = 7832.0 #[kg/m^3]
-cds = 0 #boolean que escolhe se usa método cds ou uds
+cds = 1 #boolean que escolhe se usa método cds ou uds
 yNumberOfNodes = int(0.5*(1+yN))
 xNumberOfNodes = xN
 gamma = k/cp
@@ -242,20 +242,41 @@ for j in range(xNumberOfNodes):
         A[(yNumberOfNodes-1)*xNumberOfNodes+j][(yNumberOfNodes-1)*xNumberOfNodes+j+1] = -aEast
         b[(yNumberOfNodes-1)*xNumberOfNodes+j] = aWest * T0 + aNorth*Tinf
     elif j == (xNumberOfNodes - 1):
-        aEast =  0.0
-        aWest =  k*w*0.5*deltaY/deltaX
-        aSouth = k*w*0.5*deltaX/deltaY
-        aNorth = h*w*0.5*deltaX
+        Dw = gamma*0.5*deltaY/deltaX
+        Ds = gamma*0.5*deltaX/deltaY
+        Me = M*0.5*deltaY
+        Mw = M*0.5*deltaY
+        if(cds):
+            aEast  =  0.0
+            aWest  =  Dw + 0.5*Mw
+            aSouth =  Ds
+            aNorth =  h*0.5*deltaX/cp
+        else:
+            aEast = De
+            aWest = Dw + Mw
+            aNorth = h*0.5*deltaX/cp
+            aSouth = Ds
         ap = aEast + aNorth + aWest + aSouth          
         A[(yNumberOfNodes-1)*xNumberOfNodes+j][j+(yNumberOfNodes-2)*xNumberOfNodes] = -aSouth
         A[(yNumberOfNodes-1)*xNumberOfNodes+j][(yNumberOfNodes-1)*xNumberOfNodes+j-1] = -aWest
         A[(yNumberOfNodes-1)*xNumberOfNodes+j][(yNumberOfNodes-1)*xNumberOfNodes+j] = ap
         b[(yNumberOfNodes-1)*xNumberOfNodes+j] = aNorth*Tinf        
     else:
-        aEast =  k*w*0.5*deltaY/deltaX
-        aWest =  k*w*0.5*deltaY/deltaX
-        aSouth = k*w*deltaX/deltaY
-        aNorth = h*w*deltaX
+        De = gamma*0.5*deltaY/deltaX
+        Dw = gamma*0.5*deltaY/deltaX
+        Ds = gamma*deltaX/deltaY
+        Me = M*0.5*deltaY
+        Mw = M*0.5*deltaY
+        if(cds):
+            aEast  =  De - 0.5*Me
+            aWest  =  Dw + 0.5*Mw
+            aSouth =  Ds
+            aNorth =  h*deltaX/cp
+        else:
+            aEast = De
+            aWest = Dw + Mw
+            aNorth = h*deltaX/cp
+            aSouth = Ds
         ap = aEast + aNorth + aWest + aSouth          
         A[(yNumberOfNodes-1)*xNumberOfNodes+j][j+(yNumberOfNodes-2)*xNumberOfNodes] = -aSouth
         A[(yNumberOfNodes-1)*xNumberOfNodes+j][(yNumberOfNodes-1)*xNumberOfNodes+j-1] = -aWest
@@ -298,22 +319,4 @@ plt.colorbar(orientation="vertical")
 plt.xlabel("x[m]")
 
 
-
-#############################
-#Heat transfer
-############################
-qin = 0.0
-for i in range(yN):
-    if i == 0 or i == (yN -1):
-        qin += k*0.5*w*deltaY*(T0-temperatureField[i][0])/(0.5*deltaX)
-    else:
-        qin += k*w*deltaY*(T0-temperatureField[i][0])/(0.5*deltaX)
-
-qout = 0.0
-for i in range(xNumberOfNodes):
-    if i == (xNumberOfNodes - 1):
-        qout += h*0.5*w*deltaX*(temperatureField[0][i] - Tinf)
-    else:
-        qout += h*w*deltaX*(temperatureField[0][i]-Tinf)
-qout *= 2
 
