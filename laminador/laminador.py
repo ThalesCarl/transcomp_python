@@ -7,22 +7,23 @@ Código do problema bidimensional de um laminador
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 ##############################
 #  Setting input paramethers
 ##############################
-yN = 12
-xN = 25
+yN = 5
+xN = 5
 w = 1.0 #[m]
-L = 50.0 #[m]
+L = 100.0 #[m]
 t = 0.01 #[m]
-k = 48#[W/mºC]
-h = 1000 #[W/m^2ºC]
-T0 = 1100.0 #[ºC]
-Tinf = 20.0 #[ºC]
-cp = 559.0 #[J/kgK]
-u = 10.0 #[m/s]
-rho = 7832.0 #[kg/m^3]
-cds = 1 #boolean que escolhe se usa método cds ou uds
+k = 55.0#[W/mºC]
+h = 1200 #[W/m^2ºC]
+T0 = 1250.0 #[ºC]
+Tinf = 25.0 #[ºC]
+cp = 523.0 #[J/kgK]
+u = 4 #[m/s]
+rho = 7843.0 #[kg/m^3]
+cds = True #boolean que escolhe se usa método cds ou uds
 yNumberOfNodes = int(0.5*(1+yN))
 xNumberOfNodes = xN
 gamma = k/cp
@@ -318,5 +319,14 @@ plt.contourf(xx,yy,np.array(temperatureField))
 plt.colorbar(orientation="vertical")
 plt.xlabel("x[m]")
 
+###############################
+#Exporting the solution to csv
+###############################
+
+import csv
+
+with open("./results/temperature_field_cds.csv","w") as output:
+    writer = csv.writer(output,lineterminator='\n')
+    writer.writerows(temperatureField)
 
 

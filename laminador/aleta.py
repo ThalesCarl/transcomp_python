@@ -11,14 +11,14 @@ import matplotlib.pyplot as plt
 #  Setting input paramethers
 ##############################
 yN = 5
-xN = 4
+xN = 5
 w = 1.0 #[m]
-L = 1.2 #[m]
-t = 0.15 #[m]
-k = 230.0#[W/mºC]
-h = 27.4 #[W/m^2ºC]
-T0 = 80.0 #[ºC]
-Tinf = 10.0 #[ºC]
+L = 1.0 #[m]
+t = 0.01 #[m]
+k = 55.0#[W/mºC]
+h = 1200 #[W/m^2ºC]
+T0 = 1250.0 #[ºC]
+Tinf = 25.0 #[ºC]
 yNumberOfNodes = int(0.5*(1+yN))
 xNumberOfNodes = xN
 
@@ -210,28 +210,6 @@ plt.contourf(xx,yy,np.array(temperatureField))
 plt.colorbar(orientation="vertical")
 plt.xlabel("x[m]")
 
-#########################
-##Refinando a malha
-#########################
-#refineFactor = 6
-#xNumbNodes = 4
-#yNumbNodes = 5
-#oldTemp, x, y = getTemperatureField(xNumbNodes,yNumbNodes)
-#diff = 100
-#count = 0
-#temp,x,y = getTemperatureField(refineFactor*xNumbNodes,refineFactor*yNumbNodes)
-#aux = temp[0][refineFactor*xNumbNodes-1]-oldTemp[0,xNumbNodes-1]
-#soma = aux*aux
-#index = int(0.5*(1+yNumbNodes)-1)
-#index2 = int(0.5*(1+refineFactor*yNumbNodes)-1)
-#aux = temp[index2][refineFactor*xNumbNodes-1] - oldTemp[index][xNumbNodes-1]
-#soma += aux*aux
-#diff = mt.sqrt(soma/2)
-#oldTemp = temp
-#count += 1
-#refineFactor += 1
-#print(count)
-#print(diff)
 
 #############################
 #Heat transfer
@@ -251,10 +229,8 @@ for i in range(xNumberOfNodes):
         qout += h*w*deltaX*(temperatureField[0][i]-Tinf)
 qout *= 2
 
-m = mt.sqrt(2*h*w/(k*w*t))
-q = mt.sqrt(h*2*k*w*t)*(T0-Tinf)*mt.tanh(m*L)
+import csv
 
-print(q)
-print(qin)
-print(qout)
-
+with open("./results/aleta.csv","w") as output:
+    writer = csv.writer(output,lineterminator='\n')
+    writer.writerows(temperatureField)
