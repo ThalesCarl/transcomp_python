@@ -1,13 +1,12 @@
 """
 Aluno: Thales Carl Lavoratti (151000656)
-Código do problema do cilindro girante com o cilindro parado
+Código do problema do cilindro girante cds
 """
 
 import math as mt
 import numpy as np
 import matplotlib.pyplot as plt
 import auxiliar as aux
-
 
 ##############################
 #  Setting input paramethers
@@ -21,6 +20,7 @@ L =  mt.sin(0.25*mt.pi)*(re-ri)#[m]
 k = 15.0#[W/mºC]
 Ti = 250.0 #[ºC]
 Te = 30.0 #[ºC]
+omega = 2 #[rad/s]
 
 
 #############################
@@ -29,11 +29,15 @@ Te = 30.0 #[ºC]
 
 yNodesPositions = []
 deltaY = L/(yNumberOfNodes - 1);
-ySum = mt.sin(0.25*mt.pi)*ri;
+ySum = mt.sin(0.25*mt.pi)*ri
 for i in range(yNumberOfNodes):
     yNodesPositions.append(ySum)
     ySum += deltaY
-
+ySurfacePositions = []
+ySum = mt.sin(0.25*mt.pi)*ri + 0.5*deltaY
+for i in range(yNumberOfNodes - 1):
+    ySurfacePositions.append(ySum)
+    ySum += deltaY
 #############################
 # Mesh generation in x
 #############################
@@ -44,7 +48,11 @@ xSum = mt.cos(0.25*mt.pi)*ri;
 for i in range(xNumberOfNodes):
     xNodesPositions.append(xSum)
     xSum += deltaX
-
+xSurfacePositions = []
+xSum = mt.sin(0.25*mt.pi)*ri + 0.5*deltaX
+for i in range(xNumberOfNodes - 1):
+    xSurfacePositions.append(xSum)
+    xSum += deltaX
 
 ##############################################################
 # Generating the matrix of coefficients and independent vector
@@ -52,7 +60,6 @@ for i in range(xNumberOfNodes):
 A = []
 b = []
 numberOfNodes = xNumberOfNodes * yNumberOfNodes
-
 for i in range(numberOfNodes):
     A.append([])
     for j in range(numberOfNodes):
@@ -72,6 +79,10 @@ for i in range(1,yNumberOfNodes-1):
             A[i*xNumberOfNodes+j][i*xNumberOfNodes+j] = ap
             b[i*xNumberOfNodes+j] = aux.analyticSolution(xNodesPositions[j],yNodesPositions[i])
         else:
+            uw = aux.uVelocity(omega,xSurfacePositions[j-1],yNodesPositions[i])
+            ue = aux.uVelocity(omega,xSurfacePositions[j],yNodesPositions[i])
+            vs = aux.vVelocity(omega,xNodesPositions[j],ySurfacePositions[i-1])
+            vn = aux.vVelocity(omega,xNodesPositions[j],ySurfacePositions[i])
             aEast  =  k*w*deltaY/deltaX
             aWest  =  k*w*deltaY/deltaX
             aSouth =  k*w*deltaX/deltaY
@@ -97,24 +108,4 @@ for i in range(yNumberOfNodes):
     temperatureField.append([])
     for j in range(xNumberOfNodes):
         temperatureField[i].append(solution[i*xNumberOfNodes+j])
-
-##################################
-#Plotting the solution
-########################
-xx, yy = np.meshgrid(xNodesPositions,yNodesPositions)
-plt.contourf(xx,yy,np.array(temperatureField))
-plt.colorbar(orientation="vertical")
-plt.xlabel("x[m]")
-
-#########################################
-# Error with respect to the 1D solution
-#########################################
-errors = []
-for i in range(yNumberOfNodes):
-    errors.append([])
-    for j in range(xNumberOfNodes):
-        exactTemperature = aux.analyticSolution(xNodesPositions[i],yNodesPositions[j])
-        aproxTemperature = temperatureField[i][j]
-        diff = exactTemperature - aproxTemperature
-        errors[i].append(abs(diff))
 
