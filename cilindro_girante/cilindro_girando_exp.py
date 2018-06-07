@@ -1,6 +1,6 @@
 """
 Aluno: Thales Carl Lavoratti (151000656)
-Código do problema do cilindro girante com o cilindro parado
+Código do problema do cilindro girante cds
 """
 
 import math as mt
@@ -8,12 +8,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import auxiliar as aux
 
-
 ##############################
 #  Setting input paramethers
 ##############################
-yNumberOfNodes = 6
-xNumberOfNodes = 6
+yNumberOfNodes = 4
+xNumberOfNodes = 4
 w = 1.0 #[m]
 re = 0.1 #[m]
 ri = 0.04 #[m]
@@ -21,7 +20,10 @@ L =  mt.sin(0.25*mt.pi)*(re-ri)#[m]
 k = 15.0#[W/mºC]
 Ti = 250.0 #[ºC]
 Te = 30.0 #[ºC]
-
+omega = 5.0#[rad/s]
+rho = 800.0 #[kg/m^3]
+cp =  2000#[J/kgK]
+gamma = k/cp
 
 #############################
 # Mesh generation in y
@@ -29,11 +31,15 @@ Te = 30.0 #[ºC]
 
 yNodesPositions = []
 deltaY = L/(yNumberOfNodes - 1);
-ySum = mt.sin(0.25*mt.pi)*ri;
+ySum = mt.sin(0.25*mt.pi)*ri
 for i in range(yNumberOfNodes):
     yNodesPositions.append(ySum)
     ySum += deltaY
-
+ySurfacePositions = []
+ySum = mt.sin(0.25*mt.pi)*ri + 0.5*deltaY
+for i in range(yNumberOfNodes - 1):
+    ySurfacePositions.append(ySum)
+    ySum += deltaY
 #############################
 # Mesh generation in x
 #############################
@@ -44,7 +50,11 @@ xSum = mt.cos(0.25*mt.pi)*ri;
 for i in range(xNumberOfNodes):
     xNodesPositions.append(xSum)
     xSum += deltaX
-
+xSurfacePositions = []
+xSum = mt.cos(0.25*mt.pi)*ri + 0.5*deltaX
+for i in range(xNumberOfNodes - 1):
+    xSurfacePositions.append(xSum)
+    xSum += deltaX
 
 ##############################################################
 # Generating the matrix of coefficients and independent vector
@@ -52,7 +62,6 @@ for i in range(xNumberOfNodes):
 A = []
 b = []
 numberOfNodes = xNumberOfNodes * yNumberOfNodes
-
 for i in range(numberOfNodes):
     A.append([])
     for j in range(numberOfNodes):
@@ -64,6 +73,7 @@ for j in range(xNumberOfNodes):
     A[j][j] = ap
     b[j] = aux.analyticSolution(xNodesPositions[j],yNodesPositions[0])        
         
+    
 #center
 for i in range(1,yNumberOfNodes-1):
     for j in range(xNumberOfNodes):
@@ -72,10 +82,26 @@ for i in range(1,yNumberOfNodes-1):
             A[i*xNumberOfNodes+j][i*xNumberOfNodes+j] = ap
             b[i*xNumberOfNodes+j] = aux.analyticSolution(xNodesPositions[j],yNodesPositions[i])
         else:
-            aEast  =  k*w*deltaY/deltaX
-            aWest  =  k*w*deltaY/deltaX
-            aSouth =  k*w*deltaX/deltaY
-            aNorth =  k*w*deltaX/deltaY
+            uw = aux.uVelocity(omega,xSurfacePositions[j-1],yNodesPositions[i])
+            ue = aux.uVelocity(omega,xSurfacePositions[j],yNodesPositions[i])
+            vs = aux.vVelocity(omega,xNodesPositions[j],ySurfacePositions[i-1])
+            vn = aux.vVelocity(omega,xNodesPositions[j],ySurfacePositions[i])
+            Mw = rho*uw*deltaY
+            Me = rho*ue*deltaY
+            Ms = rho*vs*deltaX
+            Mn = rho*vn*deltaX
+            De = gamma*deltaY/deltaX
+            Dw = De
+            Dn = gamma*deltaY/deltaX
+            Ds = Dn
+            Pe = Me/De
+            Pw = Mw/Dw
+            Pn = Mn/Dn
+            Ps = Ms/Ds            
+            aEast  = Me/(mt.exp(Pe) -1)
+            aWest  = Mw*mt.exp(Pw)/(mt.exp(Pw)-1)
+            aSouth = Ms*mt.exp(Ps)/(mt.exp(Ps)-1)
+            aNorth = Mn/(mt.exp(Pn) -1)
             ap = aEast + aWest + aSouth + aNorth
             A[i*xNumberOfNodes+j][j+xNumberOfNodes*(i-1)] = -aSouth
             A[i*xNumberOfNodes+j][i*xNumberOfNodes+j-1] = -aWest
@@ -105,53 +131,3 @@ xx, yy = np.meshgrid(xNodesPositions,yNodesPositions)
 plt.contourf(xx,yy,np.array(temperatureField))
 plt.colorbar(orientation="vertical")
 plt.xlabel("x[m]")
-
-#####################################
-# Analytical solution
-####################################
-anSolution = []
-for i in range(yNumberOfNodes):
-    anSolution.append([])
-    for j in range(xNumberOfNodes):
-        anSolution[i].append(aux.analyticSolution(xNodesPositions[i],yNodesPositions[j]))
-
-#########################################
-# Error with respect to the 1D solution
-#########################################
-errors = []
-for i in range(yNumberOfNodes):
-    errors.append([])
-    for j in range(xNumberOfNodes):
-        exactTemperature = anSolution[i][j]
-        aproxTemperature = temperatureField[i][j]
-        diff = (exactTemperature - aproxTemperature)/(Ti - Te)
-        errors[i].append(abs(diff))
-    
-errors = np.array(errors)
-maximumError = errors.max()
-
-import csv
-
-with open("./results/anSolution.csv","w") as output:
-    writer = csv.writer(output,lineterminator='\n')
-    for i in range(len(anSolution)):
-        outputVector = ['{:.4f}'.format(x) for x in anSolution[i]]
-        writer.writerow(outputVector)
-        
-with open("./results/temperatureField.csv","w") as output:
-    writer = csv.writer(output,lineterminator='\n')
-    for i in range(len(temperatureField)):
-        outputVector = ['{:.4f}'.format(x) for x in temperatureField[i]]
-        writer.writerow(outputVector)
-        
-with open("./results/errors.csv","w") as output:
-    writer = csv.writer(output,lineterminator='\n')
-    for i in range(len(errors)):
-        outputVector = ['{:.3e}'.format(x) for x in errors[i]]
-        writer.writerow(outputVector)
-
-with open("./results/xNodesPositions.csv","w") as output:
-    writer = csv.writer(output,lineterminator='\n')
-    outputVector = ['{:.4f}'.format(x) for x in xNodesPositions]
-    writer.writerow(outputVector)
-    

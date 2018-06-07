@@ -20,9 +20,9 @@ L =  mt.sin(0.25*mt.pi)*(re-ri)#[m]
 k = 15.0#[W/mºC]
 Ti = 250.0 #[ºC]
 Te = 30.0 #[ºC]
-omega = 10 #[rad/s]
-rho = 957.85 #[kg/m^3]
-cp = 4217 #[J/kgK]
+omega = 2.0 #[rad/s]
+rho = 800.0 #[kg/m^3]
+cp = 2000.0 #[J/kgK]
 gamma = k/cp
 
 #############################
@@ -36,7 +36,7 @@ for i in range(yNumberOfNodes):
     yNodesPositions.append(ySum)
     ySum += deltaY
 ySurfacePositions = []
-ySum = mt.sin(0.25*mt.pi)*ri + 0.5*deltaY
+ySum = mt.cos(0.25*mt.pi)*ri + 0.5*deltaY
 for i in range(yNumberOfNodes - 1):
     ySurfacePositions.append(ySum)
     ySum += deltaY
@@ -51,7 +51,7 @@ for i in range(xNumberOfNodes):
     xNodesPositions.append(xSum)
     xSum += deltaX
 xSurfacePositions = []
-xSum = mt.sin(0.25*mt.pi)*ri + 0.5*deltaX
+xSum = mt.cos(0.25*mt.pi)*ri + 0.5*deltaX
 for i in range(xNumberOfNodes - 1):
     xSurfacePositions.append(xSum)
     xSum += deltaX
@@ -127,3 +127,32 @@ xx, yy = np.meshgrid(xNodesPositions,yNodesPositions)
 plt.contourf(xx,yy,np.array(temperatureField))
 plt.colorbar(orientation="vertical")
 plt.xlabel("x[m]")
+
+#########################################
+# Error with respect to the 1D solution
+#########################################
+errors = []
+for i in range(yNumberOfNodes):
+    errors.append([])
+    for j in range(xNumberOfNodes):
+        exactTemperature = aux.analyticSolution(xNodesPositions[i],yNodesPositions[j])
+        aproxTemperature = temperatureField[i][j]
+        diff = (exactTemperature - aproxTemperature)/(Ti - Te)
+        errors[i].append(abs(diff))
+    
+errors = np.array(errors)
+maximumError = errors.max()
+
+import csv
+        
+with open("./results/temperatureField_uds_2.csv","w") as output:
+    writer = csv.writer(output,lineterminator='\n')
+    for i in range(len(temperatureField)):
+        outputVector = ['{:.4f}'.format(x) for x in temperatureField[i]]
+        writer.writerow(outputVector)
+        
+with open("./results/errors_uds_2.csv","w") as output:
+    writer = csv.writer(output,lineterminator='\n')
+    for i in range(len(errors)):
+        outputVector = ['{:.3e}'.format(x) for x in errors[i]]
+        writer.writerow(outputVector)
