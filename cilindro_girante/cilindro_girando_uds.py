@@ -1,6 +1,6 @@
 """
 Aluno: Thales Carl Lavoratti (151000656)
-Código do problema do cilindro girante cds
+Código do problema do cilindro girante uds
 """
 
 import math as mt
@@ -86,8 +86,6 @@ for i in range(1,yNumberOfNodes-1):
             ue = aux.uVelocity(omega,xSurfacePositions[j],yNodesPositions[i])
             vs = aux.vVelocity(omega,xNodesPositions[j],ySurfacePositions[i-1])
             vn = aux.vVelocity(omega,xNodesPositions[j],ySurfacePositions[i])
-            print(uw)
-            print(vs)
             Mw = rho*uw*deltaY
             Me = rho*ue*deltaY
             Ms = rho*vs*deltaX
@@ -96,10 +94,10 @@ for i in range(1,yNumberOfNodes-1):
             Dw = De
             Dn = gamma*deltaY/deltaX
             Ds = Dn            
-            aEast  = De - 0.5*Me
-            aWest  = Dw + 0.5*Mw
-            aSouth = Ds + 0.5*Ms
-            aNorth = Dn - 0.5*Mn
+            aEast  = De - Me
+            aWest  = Dw 
+            aSouth = Ds + Ms
+            aNorth = Dn 
             ap = aEast + aWest + aSouth + aNorth
             A[i*xNumberOfNodes+j][j+xNumberOfNodes*(i-1)] = -aSouth
             A[i*xNumberOfNodes+j][i*xNumberOfNodes+j-1] = -aWest

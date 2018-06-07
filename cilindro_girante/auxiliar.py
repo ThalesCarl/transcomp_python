@@ -22,7 +22,7 @@ def uVelocity(omega,x,y):
     r = mt.sqrt(x*x+y*y)
     theta = mt.atan(y/x)
     tangencialVelocity = omega*r
-    return mt.sin(theta)*tangencialVelocity
+    return (-1)*mt.sin(theta)*tangencialVelocity
 
 def vVelocity(omega,x,y):
     import math as mt
