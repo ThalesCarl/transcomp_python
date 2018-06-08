@@ -11,8 +11,8 @@ import auxiliar as aux
 ##############################
 #  Setting input paramethers
 ##############################
-yNumberOfNodes = 4
-xNumberOfNodes = 4
+yNumberOfNodes = 6
+xNumberOfNodes = 6
 w = 1.0 #[m]
 re = 0.1 #[m]
 ri = 0.04 #[m]
@@ -20,7 +20,7 @@ L =  mt.sin(0.25*mt.pi)*(re-ri)#[m]
 k = 15.0#[W/mºC]
 Ti = 250.0 #[ºC]
 Te = 30.0 #[ºC]
-omega = 2.0 #[rad/s]
+omega = 0.1 #[rad/s]
 rho = 800.0 #[kg/m^3]
 cp = 2000.0 #[J/kgK]
 gamma = k/cp
@@ -145,13 +145,13 @@ maximumError = errors.max()
 
 import csv
         
-with open("./results/temperatureField_uds_2.csv","w") as output:
+with open("./results/temperatureField_uds_5.csv","w") as output:
     writer = csv.writer(output,lineterminator='\n')
     for i in range(len(temperatureField)):
         outputVector = ['{:.4f}'.format(x) for x in temperatureField[i]]
         writer.writerow(outputVector)
         
-with open("./results/errors_uds_2.csv","w") as output:
+with open("./results/errors_uds_5.csv","w") as output:
     writer = csv.writer(output,lineterminator='\n')
     for i in range(len(errors)):
         outputVector = ['{:.3e}'.format(x) for x in errors[i]]

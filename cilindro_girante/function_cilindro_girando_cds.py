@@ -1,6 +1,6 @@
 """
-Aluno: Thales Carl Lavoratti (15100656)
-Código do problema do cilindro girante pelo esquema exponencial
+Aluno: Thales Carl Lavoratti (151000656)
+Código do problema do cilindro girante cds
 """
 
 import math as mt
@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import auxiliar as aux
 
-def erro_maximo_exp(numberOfNodes, angularVelocity):
+def erro_maximo_cds(numberOfNodes,angularVelocity):
     ##############################
     #  Setting input paramethers
     ##############################
@@ -20,9 +20,9 @@ def erro_maximo_exp(numberOfNodes, angularVelocity):
     k = 15.0#[W/mºC]
     Ti = 250.0 #[ºC]
     Te = 30.0 #[ºC]
-    omega = angularVelocity#[rad/s]
+    omega = angularVelocity #[rad/s]
     rho = 800.0 #[kg/m^3]
-    cp =  2000#[J/kgK]
+    cp = 2000.0 #[J/kgK]
     gamma = k/cp
     
     #############################
@@ -93,15 +93,11 @@ def erro_maximo_exp(numberOfNodes, angularVelocity):
                 De = gamma*deltaY/deltaX
                 Dw = De
                 Dn = gamma*deltaY/deltaX
-                Ds = Dn
-                Pe = Me/De
-                Pw = Mw/Dw
-                Pn = Mn/Dn
-                Ps = Ms/Ds            
-                aEast  = Me/(mt.exp(Pe) -1)
-                aWest  = Mw*mt.exp(Pw)/(mt.exp(Pw)-1)
-                aSouth = Ms*mt.exp(Ps)/(mt.exp(Ps)-1)
-                aNorth = Mn/(mt.exp(Pn) -1)
+                Ds = Dn            
+                aEast  = De - 0.5*Me
+                aWest  = Dw + 0.5*Mw
+                aSouth = Ds + 0.5*Ms
+                aNorth = Dn - 0.5*Mn
                 ap = aEast + aWest + aSouth + aNorth
                 A[i*xNumberOfNodes+j][j+xNumberOfNodes*(i-1)] = -aSouth
                 A[i*xNumberOfNodes+j][i*xNumberOfNodes+j-1] = -aWest
@@ -124,6 +120,7 @@ def erro_maximo_exp(numberOfNodes, angularVelocity):
         for j in range(xNumberOfNodes):
             temperatureField[i].append(solution[i*xNumberOfNodes+j])
     
+    
     #########################################
     # Error with respect to the 1D solution
     #########################################
@@ -140,20 +137,22 @@ def erro_maximo_exp(numberOfNodes, angularVelocity):
     maximumError = errors.max()
     return maximumError
 
-numberOfPoints = 20    
-maximumErrorVectorEXP = []
-velocityVector = []
-velocityPosition = 0.0001
-for i in range(numberOfPoints):
-    velocityStep = 2.0/numberOfPoints
-    velocityVector.append(velocityPosition)
-    maximumErrorVectorEXP.append(erro_maximo_exp(6,velocityPosition))   
-    velocityPosition += velocityStep
+    
+maximumErrorVectorCDS= []
+points = []
+for i in range(4,41,4):
+    points.append(i)      
+    maximumErrorVectorCDS.append(erro_maximo_cds(i,1.0))   
+    
 
 import csv
 
-with open("./results/maximum_error_exp_w.csv","w") as output:
+with open("./results/maximum_error_cds_points.csv","w") as output:
     writer = csv.writer(output,lineterminator='\n')
-    outputVector = ['{:.10f}'.format(x) for x in maximumErrorVectorEXP]
+    outputVector = ['{:.10f}'.format(x) for x in maximumErrorVectorCDS]
     writer.writerow(outputVector)
 
+with open("./results/maximum_error_points.csv","w") as output:
+    writer = csv.writer(output,lineterminator='\n')
+    outputVector = ['{:.1f}'.format(x) for x in points]
+    writer.writerow(outputVector)

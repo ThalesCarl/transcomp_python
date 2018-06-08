@@ -10,7 +10,7 @@ def analyticSolution(x,y):
     
     import math as mt
     r = mt.sqrt(x*x+y*y)
-    if r<ri or r>re:
+    if r<ri or r>re+0.1:
         print("Raio inválido")
         T = mt.nan
     else:
