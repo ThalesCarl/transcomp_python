@@ -6,19 +6,19 @@ import numpy as np
 
 #def gen(xNodes,yNodes,L,V,deltaT,rho,mi,u0,uStar,v0,vStar,method):
 method = 1 # 0 = CDS; 1 = UDS
-xNodes = 3
-yNodes = 3
+xNodes = 4
+yNodes = 4
 L=1.0
 mi = 0.001
 rho = 1.0
 deltaT = 0.1
 topWallVelocity = 1.0
-#uStar = [[0,2,-3,1,0],[0,6,-7,2,0],[0,10,5,11,0],[0,2,3,4,0]]
-#vStar = [[0,0,0,0],[9,-2,5,1],[-7,4,-5,1],[5,2,4,-8],[0,0,0,0]]
-#u0 = [[0,1,-1,2,0],[0,2,-2,3,0],[0,3,3,4,0],[0,4,-4,5,0],[0,5,-5,6,0]]
-uStar = [[0,2,-3,0],[0,6,-7,0],[0,10,11,0]]
-vStar = [[0,0,0],[9,-2,1],[-7,4,-5],[0,0,0]]
-u0 = [[0,1,-1,0],[0,2,-2,0],[0,3,3,0]]
+uStar = [[0,2,-3,1,0],[0,6,-7,2,0],[0,10,5,11,0],[0,2,3,4,0]]
+vStar = [[0,0,0,0],[9,-2,5,1],[-7,4,-5,1],[5,2,4,-8],[0,0,0,0]]
+u0 = [[0,1,-1,2,0],[0,2,-2,3,0],[0,3,3,4,0],[0,4,-4,5,0],[0,5,-5,6,0]]
+#uStar = [[0,2,-3,0],[0,6,-7,0],[0,10,11,0]]
+#vStar = [[0,0,0],[9,-2,1],[-7,4,-5],[0,0,0]]
+#u0 = [[0,1,-1,0],[0,2,-2,0],[0,3,3,0]]
 
 uCounter = (xNodes+1)*yNodes
 vCounter = xNodes*(yNodes+1)
@@ -147,3 +147,22 @@ for j in range(xNodes+1):
         A00[(yNodes-1)*(xNodes+1)+j,(yNodes-1)*(xNodes+1)+j] = ap
         A00[(yNodes-1)*(xNodes+1)+j,(yNodes-1)*(xNodes+1)+j+1] = -aEast        
         b0[(yNodes-1)*(xNodes+1)+j] = ap0 *u0[i][j] + aNorth * topWallVelocity
+        
+#####################################
+#segundo quadrante é uma matriz nula
+#####################################
+
+#####################
+#terceiro quadrante
+#####################
+countRow = 0
+countCol = 0
+while(countRow < uCounter and countCol<pCounter):
+    countRow += 1
+    for j in range(xNodes-1):
+        A02[countRow,countCol]=-deltaY
+        countCol += 1
+        A02[countRow,countCol]=deltaX
+        countRow += 1
+    countCol += 1
+    countRow += 1
