@@ -142,8 +142,7 @@ for i in range(1,yNumberOfNodes-1):
             A[i*xNumberOfNodes+j][i*xNumberOfNodes+j+1] = -aEast
             A[i*xNumberOfNodes+j][j+xNumberOfNodes*(i+1)] = -aNorth
 #top
-for j in range(xNumberOfNodes):
-    
+for j in range(xNumberOfNodes):    
     if  j == 0:
         aEast = k*w*0.5*deltaY/deltaX
         aWest = k*w*0.5*deltaY/(0.5*deltaX)
