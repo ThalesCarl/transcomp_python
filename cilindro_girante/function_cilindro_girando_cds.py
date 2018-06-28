@@ -22,7 +22,7 @@ def erro_maximo_cds(numberOfNodes,angularVelocity):
     Te = 30.0 #[ºC]
     omega = angularVelocity #[rad/s]
     rho = 800.0 #[kg/m^3]
-    cp = 2000.0 #[J/kgK]
+    cp = 20000.0 #[J/kgK]
     gamma = k/cp
     
     #############################
@@ -147,12 +147,12 @@ for i in range(4,41,4):
 
 import csv
 
-with open("./results/maximum_error_cds_points.csv","w") as output:
+with open("./results/maximum_error_cds_alto_w.csv","w") as output:
     writer = csv.writer(output,lineterminator='\n')
     outputVector = ['{:.10f}'.format(x) for x in maximumErrorVectorCDS]
     writer.writerow(outputVector)
 
-with open("./results/maximum_error_points.csv","w") as output:
+with open("./results/maximum_error_alta_velocidade.csv","w") as output:
     writer = csv.writer(output,lineterminator='\n')
-    outputVector = ['{:.1f}'.format(x) for x in points]
+    outputVector = ['{:.0f}'.format(x) for x in points]
     writer.writerow(outputVector)

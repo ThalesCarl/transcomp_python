@@ -140,20 +140,17 @@ def erro_maximo_exp(numberOfNodes, angularVelocity):
     maximumError = errors.max()
     return maximumError
 
-numberOfPoints = 20    
-maximumErrorVectorEXP = []
-velocityVector = []
-velocityPosition = 0.0001
-for i in range(numberOfPoints):
-    velocityStep = 2.0/numberOfPoints
-    velocityVector.append(velocityPosition)
-    maximumErrorVectorEXP.append(erro_maximo_exp(6,velocityPosition))   
-    velocityPosition += velocityStep
+
+maximumErrorVectorEXP= []
+points = []
+for i in range(4,41,4):
+    points.append(i)      
+    maximumErrorVectorEXP.append(erro_maximo_exp(i,1.0))   
+    
 
 import csv
 
-with open("./results/maximum_error_exp_w.csv","w") as output:
+with open("./results/maximum_error_exp_points.csv","w") as output:
     writer = csv.writer(output,lineterminator='\n')
     outputVector = ['{:.10f}'.format(x) for x in maximumErrorVectorEXP]
     writer.writerow(outputVector)
-

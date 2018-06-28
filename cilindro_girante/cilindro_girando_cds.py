@@ -20,7 +20,7 @@ L =  mt.sin(0.25*mt.pi)*(re-ri)#[m]
 k = 15.0#[W/mºC]
 Ti = 250.0 #[ºC]
 Te = 30.0 #[ºC]
-omega = 5.0#[rad/s]
+omega = 1e14#[rad/s]
 rho = 800.0 #[kg/m^3]
 cp = 2000.0 #[J/kgK]
 gamma = k/cp
@@ -86,8 +86,6 @@ for i in range(1,yNumberOfNodes-1):
             ue = aux.uVelocity(omega,xSurfacePositions[j],yNodesPositions[i])
             vs = aux.vVelocity(omega,xNodesPositions[j],ySurfacePositions[i-1])
             vn = aux.vVelocity(omega,xNodesPositions[j],ySurfacePositions[i])
-            print(uw)
-            print(vs)
             Mw = rho*uw*deltaY
             Me = rho*ue*deltaY
             Ms = rho*vs*deltaX

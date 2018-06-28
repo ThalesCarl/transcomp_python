@@ -14,16 +14,16 @@ import matplotlib.pyplot as plt
 yN = 5
 xN = 5
 w = 1.0 #[m]
-L = 100.0 #[m]
+L = 1.0 #[m]
 t = 0.01 #[m]
 k = 55.0#[W/mºC]
 h = 1200 #[W/m^2ºC]
 T0 = 1250.0 #[ºC]
 Tinf = 25.0 #[ºC]
 cp = 523.0 #[J/kgK]
-u = 4 #[m/s]
+u = 0.0 #[m/s]
 rho = 7843.0 #[kg/m^3]
-cds = True #boolean que escolhe se usa método cds ou uds
+cds = 0#boolean que escolhe se usa método cds ou uds
 yNumberOfNodes = int(0.5*(1+yN))
 xNumberOfNodes = xN
 gamma = k/cp
@@ -253,7 +253,7 @@ for j in range(xNumberOfNodes):
             aSouth =  Ds
             aNorth =  h*0.5*deltaX/cp
         else:
-            aEast = De
+            aEast = 0.0
             aWest = Dw + Mw
             aNorth = h*0.5*deltaX/cp
             aSouth = Ds
