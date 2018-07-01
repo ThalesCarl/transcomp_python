@@ -17,6 +17,7 @@ L = 1.0
 topWallVelocity = 1.0 #[m/s]
 mi = 0.001 #[Pa * s]
 rho = 1.0 #[kg/m^3]
+method = 1 # 0 = CDS; 1 = UDS
 
 deltaT = 0.1 #[s]
 numberOfTimeSteps = 10

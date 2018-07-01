@@ -6,19 +6,20 @@ import numpy as np
 
 #def gen(xNodes,yNodes,L,V,deltaT,rho,mi,u0,uStar,v0,vStar,method):
 method = 1 # 0 = CDS; 1 = UDS
-xNodes = 4
-yNodes = 4
+xNodes = 3
+yNodes = 3
 L=1.0
 mi = 0.001
 rho = 1.0
 deltaT = 0.1
 topWallVelocity = 1.0
-uStar = [[0,2,-3,1,0],[0,6,-7,2,0],[0,10,5,11,0],[0,2,3,4,0]]
-vStar = [[0,0,0,0],[9,-2,5,1],[-7,4,-5,1],[5,2,4,-8],[0,0,0,0]]
-u0 = [[0,1,-1,2,0],[0,2,-2,3,0],[0,3,3,4,0],[0,4,-4,5,0],[0,5,-5,6,0]]
-#uStar = [[0,2,-3,0],[0,6,-7,0],[0,10,11,0]]
-#vStar = [[0,0,0],[9,-2,1],[-7,4,-5],[0,0,0]]
-#u0 = [[0,1,-1,0],[0,2,-2,0],[0,3,3,0]]
+#uStar = [[0,2,-3,1,0],[0,6,-7,2,0],[0,10,5,11,0],[0,2,3,4,0]]
+#vStar = [[0,0,0,0],[9,-2,5,1],[-7,4,-5,1],[5,2,4,-8],[0,0,0,0]]
+#u0 = [[0,1,-1,2,0],[0,2,-2,3,0],[0,3,3,4,0],[0,4,-4,5,0],[0,5,-5,6,0]]
+uStar = [[0,2,-3,0],[0,6,-7,0],[0,10,11,0]]
+vStar = [[0,0,0],[9,-2,1],[-7,4,-5],[0,0,0]]
+u0 = [[0,1,-1,0],[0,2,-2,0],[0,3,3,0]]
+v0 = [[0,0,0],[4,-8,6],[2,2,-1],[0,0,0]]
 
 uCounter = (xNodes+1)*yNodes
 vCounter = xNodes*(yNodes+1)
@@ -47,7 +48,7 @@ b1 = np.zeros(vCounter)
 b2 = np.zeros(pCounter)
 
 #####################
-#primeito quadrante
+#primeito quadrante (matriz A00)
 #####################
 #bottom
 for j in range(xNodes+1):
@@ -148,13 +149,13 @@ for j in range(xNodes+1):
         A00[(yNodes-1)*(xNodes+1)+j,(yNodes-1)*(xNodes+1)+j+1] = -aEast        
         b0[(yNodes-1)*(xNodes+1)+j] = ap0 *u0[i][j] + aNorth * topWallVelocity
         
-#####################################
-#segundo quadrante é uma matriz nula
-#####################################
+#################################################
+#segundo quadrante (matriz A01) é uma matriz nula
+#################################################
 
-#####################
-#terceiro quadrante
-#####################
+################################
+#terceiro quadrante (matriz A02)
+###############################
 countRow = 0
 countCol = 0
 while(countRow < uCounter and countCol<pCounter):
@@ -166,3 +167,88 @@ while(countRow < uCounter and countCol<pCounter):
         countRow += 1
     countCol += 1
     countRow += 1
+    
+################################################
+#quarto quadrante (matriz A10) é uma matriz nula
+################################################
+
+#####################################
+#quinto quadrante (matriz A11)
+#####################################
+for i in range(yNodes+1):
+    for j in range(xNodes):
+        if i==0 or i==yNodes:
+            ap = 1.0
+            A11[i*(xNodes)+j,i*(xNodes)+j] = ap
+            b1[i*(xNodes)+j] = 0.0
+        else:
+            Mw = rho*deltaY*0.5*(uStar[i-1][j]+uStar[i][j])
+            Me = rho*deltaY*0.5*(uStar[i-1][j+1]+uStar[i][j+1])
+            Mn = rho*deltaX*0.5*(vStar[i][j]+vStar[i+1][j])
+            Ms = rho*deltaX*0.5*(vStar[i][j]+vStar[i-1][j])
+            if j == 0:
+                #borda esquerda
+                De = mi*deltaY/deltaX
+                Dw = mi*deltaY/(0.5*deltaX)
+                Dn = mi*deltaX/deltaY
+                Ds = mi*deltaX/deltaY
+                if method == 0:
+                    aEast  = De - 0.5*Me
+                    aWest  = Dw + 0.5*Mw
+                    aNorth = Dn - 0.5*Mn
+                    aSouth = Ds + 0.5*Ms
+                elif method == 1:
+                    aEast  = De + max(0,-Me)
+                    aWest  = Dw + max(0, Mw)
+                    aNorth = Dn + max(0,-Mn)
+                    aSouth = Ds + max(0, Ms)
+                ap = aEast +aWest + aSouth +aNorth
+                A11[i*xNodes+j,xNodes*(i-1)+j] = -aSouth
+                A11[i*xNodes+j,i*xNodes+j] = ap
+                A11[i*xNodes+j,i*xNodes+j+1] = -aEast
+                A11[i*xNodes+j,xNodes*(i+1)+j] = -aNorth
+                b1[i*xNodes+j] = ap0 *v0[i][j]
+            elif j == (xNodes-1):
+                #borda direita
+                De = mi*deltaY/(0.5*deltaX)
+                Dw = mi*deltaY/deltaX
+                Dn = mi*deltaX/deltaY
+                Ds = mi*deltaX/deltaY
+                if method == 0:
+                    aEast  = De - 0.5*Me
+                    aWest  = Dw + 0.5*Mw
+                    aNorth = Dn - 0.5*Mn
+                    aSouth = Ds + 0.5*Ms
+                elif method == 1:
+                    aEast  = De + max(0,-Me)
+                    aWest  = Dw + max(0, Mw)
+                    aNorth = Dn + max(0,-Mn)
+                    aSouth = Ds + max(0, Ms)
+                ap = aEast +aWest + aSouth +aNorth
+                A11[i*xNodes+j,xNodes*(i-1)+j] = -aSouth
+                A11[i*xNodes+j,i*xNodes+j-1] = -aWest
+                A11[i*xNodes+j,i*xNodes+j] = ap
+                A11[i*xNodes+j,xNodes*(i+1)+j] = -aNorth
+                b1[i*xNodes+j] = ap0 *v0[i][j]
+            else:
+                De = mi*deltaY/deltaX
+                Dw = mi*deltaY/deltaX
+                Dn = mi*deltaX/deltaY
+                Ds = mi*deltaX/deltaY
+                if method == 0:
+                    aEast  = De - 0.5*Me
+                    aWest  = Dw + 0.5*Mw
+                    aNorth = Dn - 0.5*Mn
+                    aSouth = Ds + 0.5*Ms
+                elif method == 1:
+                    aEast  = De + max(0,-Me)
+                    aWest  = Dw + max(0, Mw)
+                    aNorth = Dn + max(0,-Mn)
+                    aSouth = Ds + max(0, Ms)
+                ap = aEast +aWest + aSouth +aNorth
+                A11[i*xNodes+j,xNodes*(i-1)+j] = -aSouth
+                A11[i*xNodes+j,i*xNodes+j-1] = -aWest
+                A11[i*xNodes+j,i*xNodes+j] = ap
+                A11[i*xNodes+j,i*xNodes+j+1] = -aEast
+                A11[i*xNodes+j,xNodes*(i+1)+j] = -aNorth
+                b1[i*xNodes+j] = ap0 *v0[i][j]
