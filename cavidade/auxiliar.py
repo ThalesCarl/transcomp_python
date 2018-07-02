@@ -4,7 +4,7 @@ Funções auxiliares usadas no código do programa da cavidade
 """
 import numpy as np
 
-def gen(xNodes,yNodes,L,V,deltaT,rho,mi,u0,uStar,v0,vStar,method):
+def gen(xNodes,yNodes,L,topWallVelocity,deltaT,rho,mi,u0,uStar,v0,vStar,method):
     uCounter = (xNodes+1)*yNodes
     vCounter = xNodes*(yNodes+1)
     pCounter = xNodes*yNodes
@@ -260,6 +260,8 @@ def gen(xNodes,yNodes,L,V,deltaT,rho,mi,u0,uStar,v0,vStar,method):
             A20[countRow,countCol]=deltaX
             countRow += 1
         countCol += 1
+    A20[0,0] = 0.0
+    A20[0,1] = 0.0
         
     ##############################
     #Oitavo quadrante (matriz A21)
@@ -271,8 +273,10 @@ def gen(xNodes,yNodes,L,V,deltaT,rho,mi,u0,uStar,v0,vStar,method):
             elif j == (i+xNodes):
                 A21[i][j] = deltaX
             else: continue    
-    #Nono quadrante (matriz A10) é uma matriz nula
-    
+    A21[0,0] = 0.0
+    A21[0,xNodes]= 0.0
+    #Nono quadrante (matriz A10) é uma matriz nula,exceto pelo primeiro elemento
+    A22[0,0] = 1.0
     #################################
     #Concatenando a matriz e o vetor
     #################################
@@ -284,3 +288,10 @@ def gen(xNodes,yNodes,L,V,deltaT,rho,mi,u0,uStar,v0,vStar,method):
     b = np.hstack((b0,b1,b2))
 
     return A, b
+
+def fieldBuilder(linearVector,firstDirection,secondDirection):
+    field, remainder = np.split(linearVector,[secondDirection])        
+    for i in range(firstDirection-1):
+        builtInVector,remainder= np.split(remainder,[secondDirection])
+        field = np.vstack((field,builtInVector))
+    return field
