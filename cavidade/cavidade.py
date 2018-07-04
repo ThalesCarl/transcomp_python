@@ -10,17 +10,17 @@ import auxiliar as aux
 ##############################
 #  Setting input paramethers
 ##############################
-yNodes = 30
-xNodes = 30
+yNodes = 5
+xNodes = 5
 L = 1.0 
 topWallVelocity = 1.0 #[m/s]
 mi = 0.001 #[Pa * s]
 rho = 1.0 #[kg/m^3]
 method = 1 # 0 = CDS; 1 = UDS
 
-deltaT = 10 #[s]
-numberOfTimeSteps = 1
-maxCounter = 5
+timeStep = 1 #[s]
+numberOfTimeSteps = 20
+maxCounter = 20
 tolerance = 0.01
 
 #####################################
@@ -45,23 +45,28 @@ vCounter = xNodes*(yNodes+1)
 u0 = initial_U_Field
 v0 = initial_V_Field
 for i in range(numberOfTimeSteps):
+    print("Estou no time step")
+    print(i)
     uStar = u0
     vStar = v0
     difference = 1.0
     counter = 0
-    while(counter < maxCounter):
-        A, b = aux.gen(xNodes,yNodes,L,topWallVelocity,deltaT,rho,mi,u0,uStar,v0,vStar,method)
+    while(difference > tolerance and counter < maxCounter):
+        A, b = aux.gen(xNodes,yNodes,L,topWallVelocity,timeStep,rho,mi,u0,uStar,v0,vStar,method)
         solution = np.linalg.solve(A,b)
         uLinear,vLinear,pLinear = np.split(solution,[uCounter,uCounter+vCounter])
         u = aux.fieldBuilder(uLinear,yNodes,xNodes+1)
         v = aux.fieldBuilder(vLinear,yNodes+1,xNodes)
         pressureField = aux.fieldBuilder(pLinear,yNodes,xNodes)        
+        uDifference = abs(u - uStar)
+        vDifference = abs(v - vStar)
+        uMaximumDiference = uDifference.max()
+        vMaximumDiference = vDifference.max()
+        difference = max(uMaximumDiference,vMaximumDiference)
         uStar = u
         vStar = v
         counter += 1
-        difference = 0.001
-        print(counter)
-    
+        print(counter)      
     uFields.append(u)
     vFields.append(v) 
     pFields.append(pressureField)       
