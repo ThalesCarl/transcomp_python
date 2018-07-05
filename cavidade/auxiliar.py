@@ -4,7 +4,7 @@ Funções auxiliares usadas no código do programa da cavidade
 """
 import numpy as np
 
-def gen(xNodes,yNodes,L,topWallVelocity,deltaT,rho,mi,u0,uStar,v0,vStar,method):
+def gen(xNodes,yNodes,L,topWallVelocity,deltaT,rho,mi,u0,uStar,v0,vStar,method):    
     uCounter = (xNodes+1)*yNodes
     vCounter = xNodes*(yNodes+1)
     pCounter = xNodes*yNodes
@@ -59,13 +59,13 @@ def gen(xNodes,yNodes,L,topWallVelocity,deltaT,rho,mi,u0,uStar,v0,vStar,method):
                 aWest  = Dw + max(0, Mw)
                 aNorth = Dn + max(0,-Mn)
                 aSouth = Ds + max(0, Ms)
-            ap = aEast +aWest + aSouth +aNorth
+            ap = aEast +aWest + aSouth +aNorth + ap0 + Me - Mw + Mn - Ms
             A00[j][j-1] = -aWest
             A00[j][j] = ap
             A00[j][j+1] = -aEast        
             A00[j][j+xNodes+1] = -aNorth
             b0[j] = ap0 * u0[0][j]
-    
+
     #center
     for i in range(1,yNodes-1):
         for j in range(xNodes+1):
@@ -92,7 +92,7 @@ def gen(xNodes,yNodes,L,topWallVelocity,deltaT,rho,mi,u0,uStar,v0,vStar,method):
                     aWest  = Dw + max(0, Mw)
                     aNorth = Dn + max(0,-Mn)
                     aSouth = Ds + max(0, Ms)
-                ap = aEast +aWest + aSouth +aNorth
+                ap = aEast +aWest + aSouth +aNorth + ap0 + Me - Mw + Mn - Ms
                 A00[i*(xNodes+1)+j,(xNodes+1)*(i-1)+j] = -aSouth
                 A00[i*(xNodes+1)+j,i*(xNodes+1)+j-1] = -aWest
                 A00[i*(xNodes+1)+j,i*(xNodes+1)+j] = ap
@@ -126,7 +126,7 @@ def gen(xNodes,yNodes,L,topWallVelocity,deltaT,rho,mi,u0,uStar,v0,vStar,method):
                 aWest  = Dw + max(0, Mw)
                 aNorth = Dn + max(0,-Mn)
                 aSouth = Ds + max(0, Ms)
-            ap = aEast +aWest + aSouth +aNorth
+            ap = aEast +aWest + aSouth +aNorth + ap0 + Me - Mw + Mn - Ms
             A00[(yNodes-1)*(xNodes+1)+j,(yNodes-2)*(xNodes+1)+j] = -aSouth
             A00[(yNodes-1)*(xNodes+1)+j,(yNodes-1)*(xNodes+1)+j-1] = -aWest
             A00[(yNodes-1)*(xNodes+1)+j,(yNodes-1)*(xNodes+1)+j] = ap
@@ -186,7 +186,7 @@ def gen(xNodes,yNodes,L,topWallVelocity,deltaT,rho,mi,u0,uStar,v0,vStar,method):
                         aWest  = Dw + max(0, Mw)
                         aNorth = Dn + max(0,-Mn)
                         aSouth = Ds + max(0, Ms)
-                    ap = aEast +aWest + aSouth +aNorth
+                    ap = aEast +aWest + aSouth +aNorth + ap0 + Me - Mw + Mn - Ms
                     A11[i*xNodes+j,xNodes*(i-1)+j] = -aSouth
                     A11[i*xNodes+j,i*xNodes+j] = ap
                     A11[i*xNodes+j,i*xNodes+j+1] = -aEast
@@ -208,7 +208,7 @@ def gen(xNodes,yNodes,L,topWallVelocity,deltaT,rho,mi,u0,uStar,v0,vStar,method):
                         aWest  = Dw + max(0, Mw)
                         aNorth = Dn + max(0,-Mn)
                         aSouth = Ds + max(0, Ms)
-                    ap = aEast +aWest + aSouth +aNorth
+                    ap = aEast +aWest + aSouth +aNorth + ap0 + Me - Mw + Mn - Ms
                     A11[i*xNodes+j,xNodes*(i-1)+j] = -aSouth
                     A11[i*xNodes+j,i*xNodes+j-1] = -aWest
                     A11[i*xNodes+j,i*xNodes+j] = ap
@@ -229,7 +229,7 @@ def gen(xNodes,yNodes,L,topWallVelocity,deltaT,rho,mi,u0,uStar,v0,vStar,method):
                         aWest  = Dw + max(0, Mw)
                         aNorth = Dn + max(0,-Mn)
                         aSouth = Ds + max(0, Ms)
-                    ap = aEast +aWest + aSouth +aNorth
+                    ap = aEast +aWest + aSouth +aNorth + ap0 + Me - Mw + Mn - Ms
                     A11[i*xNodes+j,xNodes*(i-1)+j] = -aSouth
                     A11[i*xNodes+j,i*xNodes+j-1] = -aWest
                     A11[i*xNodes+j,i*xNodes+j] = ap
