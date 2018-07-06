@@ -10,7 +10,7 @@ import auxiliar as aux
 ##############################
 #  Setting input paramethers
 ##############################
-yNodes = 15
+yNodes = 70
 xNodes = yNodes
 L = 1.0 
 topWallVelocity = 1.0 #[m/s]
@@ -97,17 +97,15 @@ xx, yy = np.meshgrid(xNodesPositions,yNodesPositions)
 #######################################
 #Plotting the field
 #######################################
+averageU=[]
+averageV=[]
+uToPlot = []
+vToPlot = []
 for i in range(yNodes):
-    averageU=[]
-    averageV=[]
-    uToPlot = []
-    vToPlot = []
     for j in range(xNodes):
         averageU.append((u[i][j]+u[i][j+1])*0.5)
         averageV.append((v[i][j]+v[i+1][j])*0.5)
     uToPlot.append(averageU)
     vToPlot.append(averageV)
 plt.quiver(xx,yy,uToPlot,vToPlot)
-plt.show()
-plt.savefig("/results/seila.png")
-plt.close()
+plt.savefig("./results/seila.png")
