@@ -4,19 +4,18 @@ Código do problema da cavidade
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
 import auxiliar as aux
 
 ##############################
 #  Setting input paramethers
 ##############################
-yNodes = 70
+yNodes = 10
 xNodes = yNodes
 L = 1.0 
 topWallVelocity = 1.0 #[m/s]
 mi = 0.001 #[Pa * s]
 rho = 1.0 #[kg/m^3]
-method = 1 # 0 = CDS; 1 = UDS
+method = 0 # 0 = CDS; 1 = UDS
 
 timeStep = 30 #[s]
 numberOfTimeStepsMaximum = 60
@@ -83,29 +82,10 @@ while(differenceWithPast  > tolerance and counterTime < numberOfTimeStepsMaximum
 ###############################
 #Generating the mesh to plot
 ###############################
-xNodesPositions = []
-deltaX = L/(float(xNodes));
-xSum = 0.5*deltaX;
-for i in range(xNodes):
-    xNodesPositions.append(xSum)
-    xSum += deltaX
-yNodesPositions = xNodesPositions
-xNodesPositions = np.array(xNodesPositions)
-yNodesPositions = np.array(yNodesPositions)
+xNodesPositions, yNodesPositions = aux.meshGenerator(L,xNodes,yNodes)
 xx, yy = np.meshgrid(xNodesPositions,yNodesPositions)
 
 #######################################
 #Plotting the field
 #######################################
-averageU=[]
-averageV=[]
-uToPlot = []
-vToPlot = []
-for i in range(yNodes):
-    for j in range(xNodes):
-        averageU.append((u[i][j]+u[i][j+1])*0.5)
-        averageV.append((v[i][j]+v[i+1][j])*0.5)
-    uToPlot.append(averageU)
-    vToPlot.append(averageV)
-plt.quiver(xx,yy,uToPlot,vToPlot)
-plt.savefig("./results/seila.png")
+aux.plotTheField(u,v,xNodes,yNodes,"./results/quiver4x4.png",xx,yy)

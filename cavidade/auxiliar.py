@@ -3,6 +3,7 @@ Aluno: Thales Carl Lavoratti (151000656)
 Funções auxiliares usadas no código do programa da cavidade
 """
 import numpy as np
+import matplotlib.pyplot as plt
 
 def gen(xNodes,yNodes,L,topWallVelocity,deltaT,rho,mi,u0,uStar,v0,vStar,method):    
     uCounter = (xNodes+1)*yNodes
@@ -295,3 +296,35 @@ def fieldBuilder(linearVector,firstDirection,secondDirection):
         builtInVector,remainder= np.split(remainder,[secondDirection])
         field = np.vstack((field,builtInVector))
     return field
+
+def averageVelocity(u,v,yNodes,xNodes):
+    uToPlot = []
+    vToPlot = []
+    for i in range(yNodes):
+        averageU=[]
+        averageV=[]
+        for j in range(xNodes):
+            averageU.append((u[i][j]+u[i][j+1])*0.5)
+            averageV.append((v[i][j]+v[i+1][j])*0.5)
+        uToPlot.append(averageU)
+        vToPlot.append(averageV)
+    uToPlot = np.array(uToPlot)
+    vToPlot = np.array(vToPlot)
+    return uToPlot, vToPlot
+
+def plotTheField(u,v,xNodes,yNodes,patch,xx,yy):
+    uToPlot, vToPlot = averageVelocity(u,v,yNodes,xNodes)
+    plt.cla()
+    plt.streamplot(xx,yy,uToPlot,vToPlot,linewidth = 0.5, density = 2.5,color = "black", arrowstyle = "->")
+    plt.savefig(patch)
+    
+def meshGenerator(L,xNodes,yNodes):
+    xNodesPositions = []
+    deltaX = L/(float(xNodes));
+    xSum = 0.5*deltaX;
+    for i in range(xNodes):
+        xNodesPositions.append(xSum)
+        xSum += deltaX
+    xNodesPositions = np.array(xNodesPositions)
+    yNodesPositions = xNodesPositions
+    return xNodesPositions, yNodesPositions
