@@ -10,6 +10,7 @@ import auxiliar as aux
 
 u = np.loadtxt('./results/uFields.csv',dtype=float,delimiter=',',skiprows=0)
 v = np.loadtxt('./results/vFields.csv',dtype=float,delimiter=',',skiprows=0)
+p = np.loadtxt('./results/pFields.csv',dtype=float,delimiter=',',skiprows=0)
 yNodes = 70
 xNodes = yNodes
 L = 1.0
@@ -33,3 +34,4 @@ xx, yy = np.meshgrid(xNodesPositions,yNodesPositions)
 #Plotting the field
 #######################################
 aux.plotTheField(u,v,xNodes,yNodes,"./results/streamline70x70.png",xx,yy)
+aux.plotPressureField(p,xNodes,yNodes,L,"./results/pressure70x70.png")

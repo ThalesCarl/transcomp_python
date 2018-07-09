@@ -315,7 +315,7 @@ def averageVelocity(u,v,yNodes,xNodes):
 def plotTheField(u,v,xNodes,yNodes,patch,xx,yy):
     uToPlot, vToPlot = averageVelocity(u,v,yNodes,xNodes)
     plt.cla()
-    plt.streamplot(xx,yy,uToPlot,vToPlot,linewidth = 0.5, density = 2.5,color = "black", arrowstyle = "->")
+    plt.streamplot(xx,yy,uToPlot,vToPlot,linewidth = 0.5, density = 1.5,color = "black", arrowstyle = "->")
     plt.savefig(patch)
     
 def meshGenerator(L,xNodes,yNodes):
@@ -328,3 +328,13 @@ def meshGenerator(L,xNodes,yNodes):
     xNodesPositions = np.array(xNodesPositions)
     yNodesPositions = xNodesPositions
     return xNodesPositions, yNodesPositions
+
+def plotPressureField(pressureField,xNodes,yNodes,L,patch):
+    xNodesPositions, yNodesPositions = meshGenerator(L,xNodes,yNodes)
+    xx, yy = np.meshgrid(xNodesPositions,yNodesPositions)
+    plt.cla()
+    plt.contourf(xx,yy,pressureField, cmap = "Greys")
+    plt.colorbar(orientation="vertical")
+    plt.savefig(patch)
+    
+    

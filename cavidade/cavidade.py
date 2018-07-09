@@ -15,7 +15,7 @@ L = 1.0
 topWallVelocity = 1.0 #[m/s]
 mi = 0.001 #[Pa * s]
 rho = 1.0 #[kg/m^3]
-method = 0 # 0 = CDS; 1 = UDS
+method = 1 # 0 = CDS; 1 = UDS
 
 timeStep = 30 #[s]
 numberOfTimeStepsMaximum = 60
@@ -65,8 +65,6 @@ while(differenceWithPast  > tolerance and counterTime < numberOfTimeStepsMaximum
         uStar = u
         vStar = v
         counterIteration += 1
-    print("sai da iteração")
-    print(counterIteration)
     uFields.append(u)
     vFields.append(v) 
     pFields.append(pressureField)
@@ -88,4 +86,6 @@ xx, yy = np.meshgrid(xNodesPositions,yNodesPositions)
 #######################################
 #Plotting the field
 #######################################
-aux.plotTheField(u,v,xNodes,yNodes,"./results/quiver4x4.png",xx,yy)
+aux.plotTheField(u,v,xNodes,yNodes,"./results/streamline20x20_cds.png",xx,yy)
+aux.plotPressureField(pressureField,xNodes,yNodes,L,"./results/presure10x10_uds.png")
+

@@ -1,0 +1,9 @@
+U Ghia, K.N Ghia, C.T Shin,
+High-Re solutions for incompressible flow using the Navier-Stokes equations and a multigrid method,
+Journal of Computational Physics,
+Volume 48, Issue 3,
+1982,
+Pages 387-411,
+ISSN 0021-9991,
+https://doi.org/10.1016/0021-9991(82)90058-4.
+(http://www.sciencedirect.com/science/article/pii/0021999182900584)
